@@ -1,0 +1,2792 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personalized Study Roadmap</title>
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Arial, sans-serif;
+        margin: 0;
+        padding: 24px;
+        background-color: #f7f9fc;
+        color: #1a202c;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1280px;
+        margin: auto;
+        background: #ffffff;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+      }
+
+      .roadmap-selector {
+        margin-bottom: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .roadmap-selector button {
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: #ffffff;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .roadmap-selector button:hover {
+        background: linear-gradient(135deg, #2980b9, #1f618d);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .roadmap-selector button:focus {
+        outline: 2px solid #3498db;
+        outline-offset: 2px;
+      }
+
+      .roadmap-selector button.active {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .roadmap-section {
+        display: none;
+      }
+
+      .roadmap-section.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+      }
+
+      .week-list,
+      .day-list {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .week-item,
+      .day-item {
+        background: #f1f5f9;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.2s ease;
+        position: relative;
+      }
+
+      .week-item:hover,
+      .day-item:hover {
+        background: #e2e8f0;
+        transform: translateX(6px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .week-item:focus,
+      .day-item:focus {
+        outline: 2px solid #3498db;
+        outline-offset: 2px;
+      }
+
+      .week-item.active,
+      .day-item.active {
+        background: #e2e8f0;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .week-content,
+      .day-content {
+        display: none;
+        padding: 16px;
+        background: #fafafa;
+        border-left: 4px solid #3498db;
+        margin-top: 8px;
+        border-radius: 6px;
+        animation: slideIn 0.4s ease;
+      }
+
+      .week-content.active,
+      .day-content.active {
+        display: block;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .current-schedule {
+        background: #e6f4ea;
+        border-left: 5px solid #3c763d;
+        padding: 16px;
+        margin-bottom: 24px;
+        border-radius: 8px;
+      }
+
+      .daily-entry {
+        margin-bottom: 16px;
+      }
+
+      .daily-entry strong {
+        display: block;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .add-new-plan {
+        margin-top: 32px;
+        text-align: center;
+      }
+
+      .add-new-plan h2 {
+        margin-bottom: 16px;
+      }
+
+      .add-new-plan textarea {
+        width: 100%;
+        max-width: 600px;
+        height: 160px;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .add-new-plan textarea:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+        outline: none;
+      }
+
+      .add-new-plan button {
+        padding: 12px 28px;
+        font-size: 1rem;
+        font-weight: 500;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: background 0.3s ease, transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .add-new-plan button:hover {
+        background: linear-gradient(135deg, #27ae60, #219653);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .add-new-plan button:focus {
+        outline: 2px solid #2ecc71;
+        outline-offset: 2px;
+      }
+
+      .goal-list {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .goal-list li {
+        background: #e8f4f8;
+        padding: 12px;
+        border-left: 4px solid #3498db;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 16px;
+        }
+
+        .container {
+          padding: 16px;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        h2 {
+          font-size: 1.25rem;
+        }
+
+        h3 {
+          font-size: 1.1rem;
+        }
+
+        .roadmap-selector button {
+          padding: 10px 16px;
+          font-size: 0.9rem;
+        }
+
+        .week-item,
+        .day-item {
+          padding: 12px;
+        }
+
+        .week-content,
+        .day-content {
+          padding: 12px;
+        }
+
+        .add-new-plan textarea {
+          width: 100%;
+          height: 120px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        h2 {
+          font-size: 1.1rem;
+        }
+
+        h3 {
+          font-size: 1rem;
+        }
+
+        .roadmap-selector {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .roadmap-selector button {
+          width: 100%;
+          padding: 10px;
+        }
+
+        .add-new-plan button {
+          width: 100%;
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Personalized Study Roadmap</h1>
+
+      <div class="roadmap-selector">
+        <button id="dsa-btn" class="active">DSA Roadmap</button>
+        <button id="cs-btn">Core CS Roadmap</button>
+      </div>
+
+      <div id="dsa-roadmap" class="roadmap-section active">
+        <h2>DSA Study Plan</h2>
+        <p>
+          This plan, from August 19, 2025, to December 31, 2025 (~4.5 months),
+          focuses on building a strong foundation in DSA using Java. You should
+          commit 2-3 hours daily, with an hour for theory and 1-2 hours for
+          solving 2-3 problems on platforms like LeetCode, HackerRank, or
+          GeeksforGeeks. Sundays are excluded for rest or catch-up.
+        </p>
+        <h3>Key Goals 🎯</h3>
+        <ul class="goal-list">
+          <li>Master DSA fundamentals.</li>
+          <li>Solve 200-250 problems (50% Easy, 40% Medium, 10% Hard).</li>
+          <li>Prepare for coding interviews.</li>
+        </ul>
+        <h3>Weeks</h3>
+        <ul class="week-list">
+          <li class="week-item" onclick="toggleWeek('week-1')">
+            Week 1: Aug 19 – Aug 24 (Arrays and Basics)
+          </li>
+          <div id="week-1" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 19 (Tue): Arrays (Introduction)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Array basics, indexing, memory
+                  allocation, time/space complexity (O(1) access, O(n)
+                  search).<br />
+                  <strong>Practice:</strong> LeetCode 1 (Two Sum), 26 (Remove
+                  Duplicates from Sorted Array), 88 (Merge Sorted Array).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 20 (Wed): Arrays (Searching)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Linear Search, Binary Search (sorted
+                  arrays), complexity (O(n) vs O(log n)).<br />
+                  <strong>Practice:</strong> LeetCode 704 (Binary Search), 33
+                  (Search in Rotated Sorted Array), HackerRank "Binary Search".
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 21 (Thu): Arrays (Two-Pointer Technique)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Two-pointer technique for arrays,
+                  applications (e.g., reversing, finding pairs).<br />
+                  <strong>Practice:</strong> LeetCode 167 (Two Sum II), 283
+                  (Move Zeroes), 344 (Reverse String).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 22 (Fri): Arrays (Sliding Window)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Sliding window technique, fixed vs
+                  variable window, use cases.<br />
+                  <strong>Practice:</strong> LeetCode 209 (Minimum Size Subarray
+                  Sum), 3 (Longest Substring Without Repeating Characters).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 23 (Sat): Arrays (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise array concepts, time
+                  complexity analysis.<br />
+                  <strong>Practice:</strong> LeetCode 121 (Best Time to Buy and
+                  Sell Stock), 53 (Maximum Subarray), solve 1 Medium problem.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 24 (Mon): Arrays (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  66, 2 Medium: LeetCode 15, 238).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-2')">
+            Week 2: Aug 25 – Aug 30 (Strings and Math)
+          </li>
+          <div id="week-2" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 25 (Tue): Strings (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> String manipulation, immutability in
+                  Java, StringBuilder/StringBuffer.<br />
+                  <strong>Practice:</strong> LeetCode 344 (Reverse String), 387
+                  (First Unique Character), HackerRank "String Manipulation".
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 26 (Wed): Strings (Pattern Matching)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> KMP algorithm, substring search,
+                  regular expressions.<br />
+                  <strong>Practice:</strong> LeetCode 28 (Implement strStr()),
+                  125 (Valid Palindrome).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 27 (Thu): Math (Number Theory)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> GCD, LCM, prime numbers, modular
+                  arithmetic.<br />
+                  <strong>Practice:</strong> LeetCode 204 (Count Primes), 7
+                  (Reverse Integer).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 28 (Fri): Math (Bit Manipulation)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Bitwise operations (AND, OR, XOR),
+                  bit shifting.<br />
+                  <strong>Practice:</strong> LeetCode 136 (Single Number), 191
+                  (Number of 1 Bits).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 29 (Sat): Strings/Math (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise string and math concepts,
+                  focus on Java implementations.<br />
+                  <strong>Practice:</strong> LeetCode 5 (Longest Palindromic
+                  Substring), 43 (Multiply Strings).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 30 (Mon): Strings/Math (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  20, 1 Medium: LeetCode 49, 1 Hard: LeetCode 8).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-3')">
+            Week 3: Sep 1 – Sep 6 (Linked Lists)
+          </li>
+          <div id="week-3" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 1 (Tue): Linked Lists (Singly Linked List)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Node structure, traversal,
+                  insertion/deletion, cycle detection.<br />
+                  <strong>Practice:</strong> LeetCode 206 (Reverse Linked List),
+                  21 (Merge Two Sorted Lists).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 2 (Wed): Linked Lists (Doubly Linked List)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Doubly linked list operations,
+                  advantages over singly linked lists.<br />
+                  <strong>Practice:</strong> LeetCode 141 (Linked List Cycle),
+                  234 (Palindrome Linked List).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 3 (Thu): Linked Lists (Fast-Slow Pointers)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Floyd’s cycle detection, middle of
+                  list, merging.<br />
+                  <strong>Practice:</strong> LeetCode 142 (Linked List Cycle
+                  II), 876 (Middle of the Linked List).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 4 (Fri): Linked Lists (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Reverse in groups, rotate list, merge
+                  k sorted lists.<br />
+                  <strong>Practice:</strong> LeetCode 25 (Reverse Nodes in
+                  k-Group), 23 (Merge k Sorted Lists).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 5 (Sat): Linked Lists (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise linked list concepts, focus on
+                  edge cases.<br />
+                  <strong>Practice:</strong> LeetCode 19 (Remove Nth Node From
+                  End), 160 (Intersection of Two Linked Lists).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 6 (Mon): Linked Lists (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  83, 2 Medium: LeetCode 2, 445).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-4')">
+            Week 4: Sep 8 – Sep 13 (Stacks and Queues)
+          </li>
+          <div id="week-4" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 8 (Tue): Stacks (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Stack operations (push, pop), LIFO,
+                  Java Stack class.<br />
+                  <strong>Practice:</strong> LeetCode 20 (Valid Parentheses),
+                  155 (Min Stack).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 9 (Wed): Stacks (Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Stack in expression evaluation,
+                  backtracking.<br />
+                  <strong>Practice:</strong> LeetCode 394 (Decode String), 71
+                  (Simplify Path).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 10 (Thu): Queues (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Queue operations (enqueue, dequeue),
+                  FIFO, Java Queue interface.<br />
+                  <strong>Practice:</strong> LeetCode 232 (Implement Queue using
+                  Stacks), 933 (Recent Counter).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 11 (Fri): Queues (Priority Queue)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Priority Queue, heap-based
+                  implementation, Java PriorityQueue.<br />
+                  <strong>Practice:</strong> LeetCode 703 (Kth Largest Element
+                  in a Stream), 347 (Top K Frequent Elements).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 12 (Sat): Stacks/Queues (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise stack/queue concepts, compare
+                  implementations.<br />
+                  <strong>Practice:</strong> LeetCode 739 (Daily Temperatures),
+                  225 (Implement Stack using Queues).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 13 (Mon): Stacks/Queues (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  496, 1 Medium: LeetCode 146, 1 Hard: LeetCode 239).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-5')">
+            Week 5: Sep 15 – Sep 20 (Trees - Basics)
+          </li>
+          <div id="week-5" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 15 (Tue): Binary Trees (Introduction)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Tree structure, nodes, traversal
+                  (inorder, preorder, postorder).<br />
+                  <strong>Practice:</strong> LeetCode 94 (Binary Tree Inorder
+                  Traversal), 144 (Preorder Traversal).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 16 (Wed): Binary Trees (Level Order)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> BFS, level-order traversal,
+                  queue-based implementation.<br />
+                  <strong>Practice:</strong> LeetCode 102 (Binary Tree Level
+                  Order Traversal), 107 (Level Order Traversal II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 17 (Thu): Binary Search Trees (BST)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> BST properties, insertion, deletion,
+                  searching.<br />
+                  <strong>Practice:</strong> LeetCode 98 (Validate Binary Search
+                  Tree), 700 (Search in a BST).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 18 (Fri): Trees (Height and Balance)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Tree height, balanced trees,
+                  diameter.<br />
+                  <strong>Practice:</strong> LeetCode 110 (Balanced Binary
+                  Tree), 543 (Diameter of Binary Tree).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 19 (Sat): Trees (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise tree traversals, BST
+                  properties.<br />
+                  <strong>Practice:</strong> LeetCode 104 (Maximum Depth of
+                  Binary Tree), 617 (Merge Two Binary Trees).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 20 (Mon): Trees (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  226, 2 Medium: LeetCode 236, 101).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-6')">
+            Week 6: Sep 22 – Sep 27 (Trees - Advanced)
+          </li>
+          <div id="week-6" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 22 (Tue): Trees (Path Sum)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Path sum problems, DFS
+                  applications.<br />
+                  <strong>Practice:</strong> LeetCode 112 (Path Sum), 113 (Path
+                  Sum II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 23 (Wed): Trees (LCA and Serialization)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Lowest Common Ancestor,
+                  serialize/deserialize trees.<br />
+                  <strong>Practice:</strong> LeetCode 236 (Lowest Common
+                  Ancestor of a Binary Tree), 297 (Serialize and Deserialize
+                  Binary Tree).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 24 (Thu): Trees (Advanced Traversals)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Morris traversal, iterative
+                  traversals.<br />
+                  <strong>Practice:</strong> LeetCode 99 (Recover Binary Search
+                  Tree), 145 (Postorder Traversal).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 25 (Fri): Trees (Construction)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Construct trees from traversals,
+                  unique paths.<br />
+                  <strong>Practice:</strong> LeetCode 105 (Construct Binary Tree
+                  from Preorder and Inorder), 106 (Inorder and Postorder).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 26 (Sat): Trees (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise advanced tree concepts, focus
+                  on Java implementations.<br />
+                  <strong>Practice:</strong> LeetCode 124 (Binary Tree Maximum
+                  Path Sum), 450 (Delete Node in a BST).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 27 (Mon): Trees (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 199, 2 Hard: LeetCode 337, 968).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-7')">
+            Week 7: Sep 29 – Oct 4 (Graphs - Basics)
+          </li>
+          <div id="week-7" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 29 (Tue): Graphs (Introduction)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Graph representation (adjacency
+                  list/matrix), DFS, BFS.<br />
+                  <strong>Practice:</strong> LeetCode 200 (Number of Islands),
+                  733 (Flood Fill).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 30 (Wed): Graphs (DFS Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Connected components, cycle detection
+                  in graphs.<br />
+                  <strong>Practice:</strong> LeetCode 547 (Number of Provinces),
+                  207 (Course Schedule).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 1 (Thu): Graphs (BFS Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Shortest path in unweighted graphs,
+                  bipartite graphs.<br />
+                  <strong>Practice:</strong> LeetCode 994 (Rotting Oranges), 130
+                  (Surrounded Regions).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 2 (Fri): Graphs (Topological Sort)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Topological sorting, Kahn’s
+                  algorithm, DFS-based sort.<br />
+                  <strong>Practice:</strong> LeetCode 210 (Course Schedule II),
+                  207 (Course Schedule).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 3 (Sat): Graphs (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise graph traversal, adjacency
+                  list in Java.<br />
+                  <strong>Practice:</strong> LeetCode 841 (Keys and Rooms), 785
+                  (Is Graph Bipartite?).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 4 (Mon): Graphs (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  997, 2 Medium: LeetCode 417, 797).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-8')">
+            Week 8: Oct 6 – Oct 11 (Graphs - Advanced)
+          </li>
+          <div id="week-8" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 6 (Tue): Graphs (Shortest Path)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Dijkstra’s algorithm,
+                  Bellman-Ford.<br />
+                  <strong>Practice:</strong> LeetCode 743 (Network Delay Time),
+                  787 (Cheapest Flights Within K Stops).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 7 (Wed): Graphs (Minimum Spanning Tree)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Kruskal’s and Prim’s algorithms.<br />
+                  <strong>Practice:</strong> LeetCode 1584 (Min Cost to Connect
+                  All Points), 1135 (Connecting Cities With Minimum Cost).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 8 (Thu): Graphs (Union-Find)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Disjoint Set Union (DSU), path
+                  compression, rank.<br />
+                  <strong>Practice:</strong> LeetCode 684 (Redundant
+                  Connection), 721 (Accounts Merge).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 9 (Fri): Graphs (Advanced Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Strongly connected components,
+                  bridges.<br />
+                  <strong>Practice:</strong> LeetCode 1192 (Critical Connections
+                  in a Network), 332 (Reconstruct Itinerary).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 10 (Sat): Graphs (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise graph algorithms, focus on
+                  Java implementations.<br />
+                  <strong>Practice:</strong> LeetCode 261 (Graph Valid Tree),
+                  886 (Possible Bipartition).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 11 (Mon): Graphs (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 323, 2 Hard: LeetCode 269, 815).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-9')">
+            Week 9: Oct 13 – Oct 18 (Dynamic Programming - Basics)
+          </li>
+          <div id="week-9" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 13 (Tue): DP (Introduction)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Memoization, tabulation, overlapping
+                  subproblems.<br />
+                  <strong>Practice:</strong> LeetCode 509 (Fibonacci Number), 70
+                  (Climbing Stairs).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 14 (Wed): DP (1D Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> 1D DP, state transitions, knapsack
+                  basics.<br />
+                  <strong>Practice:</strong> LeetCode 198 (House Robber), 746
+                  (Min Cost Climbing Stairs).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 15 (Thu): DP (Knapsack Variants)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> 0/1 Knapsack, subset sum, coin
+                  change.<br />
+                  <strong>Practice:</strong> LeetCode 416 (Partition Equal
+                  Subset Sum), 322 (Coin Change).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 16 (Fri): DP (Longest Common Subsequence)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> LCS, LIS, edit distance.<br />
+                  <strong>Practice:</strong> LeetCode 1143 (Longest Common
+                  Subsequence), 300 (Longest Increasing Subsequence).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 17 (Sat): DP (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise DP concepts, focus on state
+                  design in Java.<br />
+                  <strong>Practice:</strong> LeetCode 213 (House Robber II), 91
+                  (Decode Ways).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 18 (Mon): DP (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  118, 2 Medium: LeetCode 139, 377).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-10')">
+            Week 10: Oct 20 – Oct 25 (Dynamic Programming - Advanced)
+          </li>
+          <div id="week-10" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 20 (Tue): DP (2D Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Grid-based DP, path problems.<br />
+                  <strong>Practice:</strong> LeetCode 62 (Unique Paths), 64
+                  (Minimum Path Sum).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 21 (Wed): DP (Advanced Patterns)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Palindromic subsequences, stock
+                  trading.<br />
+                  <strong>Practice:</strong> LeetCode 5 (Longest Palindromic
+                  Substring), 123 (Best Time to Buy and Sell Stock III).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 22 (Thu): DP (State Machine)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> State machine DP, complex
+                  transitions.<br />
+                  <strong>Practice:</strong> LeetCode 309 (Best Time to Buy and
+                  Sell Stock with Cooldown), 714 (Stock with Transaction Fee).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 23 (Fri): DP (Optimization)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Space-optimized DP, bitmask DP.<br />
+                  <strong>Practice:</strong> LeetCode 494 (Target Sum), 518
+                  (Coin Change 2).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 24 (Sat): DP (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise advanced DP patterns, optimize
+                  Java code.<br />
+                  <strong>Practice:</strong> LeetCode 72 (Edit Distance), 115
+                  (Distinct Subsequences).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 25 (Mon): DP (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 377, 2 Hard: LeetCode 312, 887).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-11')">
+            Week 11: Oct 27 – Nov 1 (Greedy Algorithms)
+          </li>
+          <div id="week-11" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 27 (Tue): Greedy (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Greedy choice property, activity
+                  selection.<br />
+                  <strong>Practice:</strong> LeetCode 55 (Jump Game), 45 (Jump
+                  Game II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 28 (Wed): Greedy (Interval Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Interval scheduling, overlapping
+                  intervals.<br />
+                  <strong>Practice:</strong> LeetCode 435 (Non-overlapping
+                  Intervals), 452 (Minimum Number of Arrows).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 29 (Thu): Greedy (Optimization Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Greedy for optimization (e.g., coin
+                  change, Huffman coding).<br />
+                  <strong>Practice:</strong> LeetCode 621 (Task Scheduler), 767
+                  (Reorganize String).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 30 (Fri): Greedy (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Greedy with sorting, fractional
+                  knapsack.<br />
+                  <strong>Practice:</strong> LeetCode 406 (Queue Reconstruction
+                  by Height), 135 (Candy).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 31 (Sat): Greedy (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise greedy vs DP, when to use
+                  greedy.<br />
+                  <strong>Practice:</strong> LeetCode 763 (Partition Labels),
+                  948 (Bag of Tokens).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 1 (Mon): Greedy (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  860, 2 Medium: LeetCode 1005, 435).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-12')">
+            Week 12: Nov 3 – Nov 8 (Hashing and Sets)
+          </li>
+          <div id="week-12" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 3 (Tue): Hashing (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> HashMap, HashSet in Java, collision
+                  handling.<br />
+                  <strong>Practice:</strong> LeetCode 1 (Two Sum), 49 (Group
+                  Anagrams).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 4 (Wed): Hashing (Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Subarray sums, frequency counting.<br />
+                  <strong>Practice:</strong> LeetCode 560 (Subarray Sum Equals
+                  K), 525 (Contiguous Array).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 5 (Thu): Sets and Maps
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Java HashSet, TreeSet, TreeMap, use
+                  cases.<br />
+                  <strong>Practice:</strong> LeetCode 349 (Intersection of Two
+                  Arrays), 350 (Intersection of Two Arrays II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 6 (Fri): Hashing (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Custom hashing, rolling hash.<br />
+                  <strong>Practice:</strong> LeetCode 76 (Minimum Window
+                  Substring), 438 (Find All Anagrams in a String).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 7 (Sat): Hashing (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise hashing concepts, optimize
+                  Java HashMap usage.<br />
+                  <strong>Practice:</strong> LeetCode 128 (Longest Consecutive
+                  Sequence), 219 (Contains Duplicate II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 8 (Mon): Hashing (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 146, 2 Hard: LeetCode 295, 76).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-13')">
+            Week 13: Nov 10 – Nov 15 (Heaps and Priority Queues)
+          </li>
+          <div id="week-13" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 10 (Tue): Heaps (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Min-Heap, Max-Heap, Java
+                  PriorityQueue.<br />
+                  <strong>Practice:</strong> LeetCode 215 (Kth Largest Element
+                  in an Array), 703 (Kth Largest Element in a Stream).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 11 (Wed): Heaps (Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Heap sort, top K elements, merge k
+                  sorted lists.<br />
+                  <strong>Practice:</strong> LeetCode 347 (Top K Frequent
+                  Elements), 23 (Merge k Sorted Lists).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 12 (Thu): Heaps (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Median in a stream, sliding window
+                  maximum.<br />
+                  <strong>Practice:</strong> LeetCode 295 (Find Median from Data
+                  Stream), 239 (Sliding Window Maximum).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 13 (Fri): Heaps (Custom Comparators)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Custom comparators in Java
+                  PriorityQueue.<br />
+                  <strong>Practice:</strong> LeetCode 378 (Kth Smallest Element
+                  in a Sorted Matrix), 692 (Top K Frequent Words).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 14 (Sat): Heaps (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise heap operations, complexity
+                  analysis.<br />
+                  <strong>Practice:</strong> LeetCode 264 (Ugly Number II), 373
+                  (Find K Pairs with Smallest Sums).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 15 (Mon): Heaps (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Easy: LeetCode
+                  1046, 2 Medium: LeetCode 407, 857).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-14')">
+            Week 14: Nov 17 – Nov 22 (Binary Search Applications)
+          </li>
+          <div id="week-14" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 17 (Tue): Binary Search (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Binary search on arrays, iterative vs
+                  recursive.<br />
+                  <strong>Practice:</strong> LeetCode 704 (Binary Search), 35
+                  (Search Insert Position).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 18 (Wed): Binary Search (Rotated Arrays)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Binary search on rotated sorted
+                  arrays.<br />
+                  <strong>Practice:</strong> LeetCode 33 (Search in Rotated
+                  Sorted Array), 81 (Search in Rotated Sorted Array II).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 19 (Thu): Binary Search (Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Binary search for answers (e.g.,
+                  min/max problems).<br />
+                  <strong>Practice:</strong> LeetCode 153 (Find Minimum in
+                  Rotated Sorted Array), 162 (Find Peak Element).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 20 (Fri): Binary Search (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Binary search on non-array problems
+                  (e.g., square root).<br />
+                  <strong>Practice:</strong> LeetCode 69 (Sqrt(x)), 287 (Find
+                  the Duplicate Number).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 21 (Sat): Binary Search (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise binary search patterns, edge
+                  cases.<br />
+                  <strong>Practice:</strong> LeetCode 278 (First Bad Version),
+                  540 (Single Element in a Sorted Array).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 22 (Mon): Binary Search (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 34, 2 Hard: LeetCode 410, 875).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-15')">
+            Week 15: Nov 24 – Nov 29 (Trie and Advanced Strings)
+          </li>
+          <div id="week-15" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 24 (Tue): Trie (Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Trie structure, insertion, search,
+                  prefix search.<br />
+                  <strong>Practice:</strong> LeetCode 208 (Implement Trie), 211
+                  (Design Add and Search Words Data Structure).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 25 (Wed): Trie (Applications)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Autocomplete, spell checker, word
+                  break.<br />
+                  <strong>Practice:</strong> LeetCode 212 (Word Search II), 139
+                  (Word Break).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 26 (Thu): Strings (Advanced)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> KMP, Rabin-Karp, suffix trees.<br />
+                  <strong>Practice:</strong> LeetCode 28 (Implement strStr()),
+                  214 (Shortest Palindrome).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 27 (Fri): Strings (Pattern Matching)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Advanced string matching, regular
+                  expressions.<br />
+                  <strong>Practice:</strong> LeetCode 10 (Regular Expression
+                  Matching), 44 (Wildcard Matching).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 28 (Sat): Trie/Strings (Revision)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise trie and string algorithms,
+                  optimize Java code.<br />
+                  <strong>Practice:</strong> LeetCode 720 (Longest Word in
+                  Dictionary), 676 (Implement Magic Dictionary).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 29 (Mon): Trie/Strings (Practice)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 problems (1 Medium:
+                  LeetCode 139, 2 Hard: LeetCode 336, 472).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-16')">
+            Week 16: Dec 1 – Dec 6 (Revision and Mixed Problems)
+          </li>
+          <div id="week-16" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 1 (Tue): Revision (Arrays, Strings)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise arrays and strings, focus on
+                  common patterns.<br />
+                  <strong>Practice:</strong> LeetCode 238 (Product of Array
+                  Except Self), 49 (Group Anagrams).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 2 (Wed): Revision (Linked Lists, Stacks)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise linked lists and stacks, edge
+                  cases.<br />
+                  <strong>Practice:</strong> LeetCode 25 (Reverse Nodes in
+                  k-Group), 146 (LRU Cache).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 3 (Thu): Revision (Trees, Graphs)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise tree traversals, graph
+                  algorithms.<br />
+                  <strong>Practice:</strong> LeetCode 124 (Binary Tree Maximum
+                  Path Sum), 207 (Course Schedule).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 4 (Fri): Revision (DP, Greedy)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Revise DP and greedy patterns.<br />
+                  <strong>Practice:</strong> LeetCode 300 (Longest Increasing
+                  Subsequence), 435 (Non-overlapping Intervals).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 5 (Sat): Mixed Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (2 Medium:
+                  LeetCode 76, 239, 2 Hard: LeetCode 295, 410).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 6 (Mon): Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a mock interview on Pramp or
+                  Interviewing.io (2-3 problems, focus on Java).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-17')">
+            Week 17: Dec 8 – Dec 13 (Company-Specific Preparation)
+          </li>
+          <div id="week-17" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 8 (Tue): Amazon Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Study Amazon’s leadership principles,
+                  focus on array, string, heap problems.<br />
+                  <strong>Practice:</strong> LeetCode 1 (Two Sum), 146 (LRU
+                  Cache), 239 (Sliding Window Maximum).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 9 (Wed): Google Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Focus on DP, graphs, and system
+                  design basics.<br />
+                  <strong>Practice:</strong> LeetCode 124 (Binary Tree Maximum
+                  Path Sum), 269 (Alien Dictionary).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 10 (Thu): Microsoft Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Focus on linked lists, trees, and
+                  Java-specific problems.<br />
+                  <strong>Practice:</strong> LeetCode 206 (Reverse Linked List),
+                  236 (Lowest Common Ancestor).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 11 (Fri): Meta Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Focus on full-stack problems, graphs,
+                  and DP.<br />
+                  <strong>Practice:</strong> LeetCode 212 (Word Search II), 300
+                  (Longest Increasing Subsequence).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 12 (Sat): Mixed Company Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (2 Medium:
+                  LeetCode 76, 146, 2 Hard: LeetCode 295, 410).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 13 (Mon): Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a mock interview (focus on
+                  company-specific problems, explain solutions in Java).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-18')">
+            Week 18: Dec 15 – Dec 20 (Final Revision and Mock Interviews)
+          </li>
+          <div id="week-18" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 15 (Tue): Revision (Hard Problems)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 3 Hard problems from LeetCode
+                  (e.g., 23: Merge k Sorted Lists, 312: Burst Balloons).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 16 (Wed): Revision (System Design Basics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Study system design basics (e.g., URL
+                  shortener, messaging system) using Grokking the System Design
+                  Interview.<br />
+                  <strong>Practice:</strong> Solve 2 Medium problems (e.g.,
+                  LeetCode 146, 208).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 17 (Thu): Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a mock interview (3 problems,
+                  focus on explaining thought process in Java).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 18 (Fri): Behavioral Interview Prep
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Prepare STAR-based stories for
+                  leadership, teamwork, and problem-solving.<br />
+                  <strong>Practice:</strong> Solve 2 Medium problems (e.g.,
+                  LeetCode 76, 236).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 19 (Sat): Mixed Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (2 Medium:
+                  LeetCode 146, 239, 2 Hard: LeetCode 336, 815).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 20 (Mon): Final Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a full mock interview (3-4
+                  problems, simulate real interview conditions).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-19')">
+            Week 19: Dec 22 – Dec 27 (Final Preparation)
+          </li>
+          <div id="week-19" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 22 (Tue): Revision (All Topics)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (1 Easy: LeetCode
+                  20, 2 Medium: LeetCode 146, 236, 1 Hard: LeetCode 295).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 23 (Wed): Company-Specific Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems from LeetCode
+                  company tags (Amazon, Google, Microsoft, Meta: LeetCode 1,
+                  124, 206, 212).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 24 (Thu): Behavioral Interview Prep
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Refine STAR stories, practice common
+                  questions (e.g., “Tell me about a challenge you faced”).<br />
+                  <strong>Practice:</strong> Solve 2 Medium problems (e.g.,
+                  LeetCode 146, 236).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 25 (Fri): Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a mock interview (3 problems,
+                  focus on time management).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 26 (Sat): Revision (Weak Areas)
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Revisit weak topics (e.g., DP,
+                  graphs) and solve 3 problems (1 Medium: LeetCode 300, 2 Hard:
+                  LeetCode 269, 410).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 27 (Mon): Final Practice
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (2 Medium:
+                  LeetCode 76, 146, 2 Hard: LeetCode 295, 336).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('week-20')">
+            Week 20: Dec 29 – Dec 31 (Wrap-Up)
+          </li>
+          <div id="week-20" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 29 (Tue): Final Revision
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Solve 4 problems (2 Medium:
+                  LeetCode 146, 239, 2 Hard: LeetCode 312, 410).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 30 (Wed): Mock Interview
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Practice:</strong> Take a final mock interview (3-4
+                  problems, simulate real conditions).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 31 (Thu): Review and Prep
+              </li>
+              <div class="day-content">
+                <p>
+                  <strong>Theory:</strong> Review all notes, revise key
+                  algorithms (e.g., Dijkstra’s, KMP).<br />
+                  <strong>Practice:</strong> Solve 2 Hard problems (LeetCode
+                  295, 336), prepare for job applications.
+                </p>
+              </div>
+            </ul>
+          </div>
+        </ul>
+      </div>
+
+      <div id="cs-roadmap" class="roadmap-section">
+        <h2>Core CS Roadmap</h2>
+        <p>
+          This Core CS Roadmap covers topics from August 17 to December 31,
+          2025, excluding Sundays, organized by weeks for a structured learning
+          path.
+        </p>
+        <h3>Weeks</h3>
+        <ul class="week-list">
+          <li class="week-item" onclick="toggleWeek('cs-week-1')">
+            Week 1: Aug 18 – Aug 23 (OOP Basics)
+          </li>
+          <div id="cs-week-1" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 18 (Mon): OOP Basics: Classes & Objects
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn the fundamentals of classes and objects in OOP,
+                  including object creation and method definitions.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 19 (Tue): OOP Basics: Encapsulation
+              </li>
+              <div class="day-content">
+                <p>
+                  Understand encapsulation, data hiding, and use of access
+                  modifiers (private, public).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 20 (Wed): OOP Basics: Inheritance
+              </li>
+              <div class="day-content">
+                <p>
+                  Study inheritance, super/subclass relationships, and method
+                  overriding.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 21 (Thu): OOP Basics: Polymorphism
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore polymorphism, including method overloading and runtime
+                  polymorphism.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 22 (Fri): OOP Basics: Abstraction
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn abstraction using abstract classes and interfaces in
+                  Java.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 23 (Sat): OOP Basics: Static & Final
+              </li>
+              <div class="day-content">
+                <p>
+                  Understand static members, final keyword, and their use cases
+                  in Java.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-2')">
+            Week 2: Aug 25 – Aug 30 (OOP Basics & Advanced)
+          </li>
+          <div id="cs-week-2" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 25 (Mon): OOP Basics: Practice OOP MCQs
+              </li>
+              <div class="day-content">
+                <p>
+                  Solve multiple-choice questions on OOP concepts to reinforce
+                  learning.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 26 (Tue): OOP Advanced: Object Class Methods
+              </li>
+              <div class="day-content">
+                <p>
+                  Study Object class methods (e.g., toString, equals, hashCode)
+                  in Java.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 27 (Wed): OOP Advanced: Inner Classes
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn about inner classes, including static and non-static
+                  nested classes.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 28 (Thu): OOP Advanced: Exception Handling
+              </li>
+              <div class="day-content">
+                <p>
+                  Understand try-catch blocks, checked vs unchecked exceptions,
+                  and custom exceptions.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 29 (Fri): OOP Advanced: Generics
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore generics in Java for type-safe collections and
+                  methods.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Aug 30 (Sat): OOP Advanced: Collections Basics
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn Java Collections Framework (List, Set, Map) and their
+                  basic operations.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-3')">
+            Week 3: Sep 1 – Sep 6 (OOP Advanced & DBMS Basics)
+          </li>
+          <div id="cs-week-3" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 1 (Mon): OOP Advanced: SOLID Principles
+              </li>
+              <div class="day-content">
+                <p>
+                  Study SOLID principles for designing robust and maintainable
+                  code.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 2 (Tue): OOP Advanced: Design Patterns
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn common design patterns (e.g., Singleton, Factory,
+                  Observer).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 3 (Wed): DBMS Basics: Intro to DBMS
+              </li>
+              <div class="day-content">
+                <p>
+                  Understand the basics of Database Management Systems and their
+                  importance.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 4 (Thu): DBMS Basics: Data Models
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore hierarchical, network, and relational data models.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 5 (Fri): DBMS Basics: ER Model
+              </li>
+              <div class="day-content">
+                <p>Learn Entity-Relationship modeling and diagram creation.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 6 (Sat): DBMS Basics: Relational Model & Keys
+              </li>
+              <div class="day-content">
+                <p>
+                  Understand relational model concepts, primary keys, and
+                  foreign keys.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-4')">
+            Week 4: Sep 8 – Sep 13 (DBMS Basics & SQL Basics)
+          </li>
+          <div id="cs-week-4" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 8 (Mon): DBMS Basics: Constraints
+              </li>
+              <div class="day-content">
+                <p>
+                  Study integrity constraints (e.g., NOT NULL, UNIQUE, CHECK).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 9 (Tue): DBMS Basics: Normalization
+              </li>
+              <div class="day-content">
+                <p>Learn normalization techniques (1NF, 2NF, 3NF, BCNF).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 10 (Wed): DBMS Basics: Schema Design Practice
+              </li>
+              <div class="day-content">
+                <p>
+                  Practice designing database schemas based on requirements.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 11 (Thu): SQL Basics: SELECT & WHERE
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn SELECT statements and WHERE clause for filtering data.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 12 (Fri): SQL Basics: Filtering Conditions
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore advanced filtering with AND, OR, LIKE, and IN
+                  operators.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 13 (Sat): SQL Basics: Aggregations
+              </li>
+              <div class="day-content">
+                <p>Study aggregation functions (COUNT, SUM, AVG, MIN, MAX).</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-5')">
+            Week 5: Sep 15 – Sep 20 (SQL Basics & Advanced)
+          </li>
+          <div id="cs-week-5" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 15 (Mon): SQL Basics: GROUP BY & HAVING
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn GROUP BY for grouping data and HAVING for filtering
+                  groups.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 16 (Tue): SQL Basics: ORDER BY
+              </li>
+              <div class="day-content">
+                <p>Understand ORDER BY for sorting query results.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 17 (Wed): SQL Basics: Joins
+              </li>
+              <div class="day-content">
+                <p>Explore INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL JOIN.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 18 (Thu): SQL Basics: Practice SQL Easy Queries
+              </li>
+              <div class="day-content">
+                <p>
+                  Solve easy SQL problems on platforms like LeetCode or
+                  HackerRank.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 19 (Fri): SQL Advanced: Nested Queries
+              </li>
+              <div class="day-content">
+                <p>Learn nested queries (subqueries in SELECT, WHERE).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 20 (Sat): SQL Advanced: Subqueries IN/ANY/ALL
+              </li>
+              <div class="day-content">
+                <p>Study subqueries using IN, ANY, and ALL operators.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-6')">
+            Week 6: Sep 22 – Sep 27 (SQL Advanced & DBMS Advanced)
+          </li>
+          <div id="cs-week-6" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 22 (Mon): SQL Advanced: EXISTS
+              </li>
+              <div class="day-content">
+                <p>Learn EXISTS clause for checking subquery results.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 23 (Tue): SQL Advanced: Set Operations
+              </li>
+              <div class="day-content">
+                <p>
+                  Study UNION, INTERSECT, and EXCEPT for combining query
+                  results.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 24 (Wed): SQL Advanced: Views & Indexes
+              </li>
+              <div class="day-content">
+                <p>Understand database views and indexing for performance.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 25 (Thu): SQL Advanced: Transactions & ACID
+              </li>
+              <div class="day-content">
+                <p>Learn transactions, ACID properties, and COMMIT/ROLLBACK.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 26 (Fri): SQL Advanced: SQL Medium Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  Solve medium-difficulty SQL problems to reinforce concepts.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 27 (Sat): DBMS Advanced: Concurrency Control
+              </li>
+              <div class="day-content">
+                <p>
+                  Study concurrency control techniques (e.g., locking,
+                  timestamping).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-7')">
+            Week 7: Sep 29 – Oct 4 (DBMS Advanced)
+          </li>
+          <div id="cs-week-7" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 29 (Mon): DBMS Advanced: Isolation Levels
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn transaction isolation levels (e.g., Read Uncommitted,
+                  Serializable).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Sep 30 (Tue): DBMS Advanced: Recovery & Logging
+              </li>
+              <div class="day-content">
+                <p>
+                  Study database recovery techniques and logging mechanisms.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 1 (Wed): DBMS Advanced: Indexing (B/B+ Trees)
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore B and B+ tree indexing for efficient data retrieval.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 2 (Thu): DBMS Advanced: Hashing in DBMS
+              </li>
+              <div class="day-content">
+                <p>Learn hashing techniques for database indexing.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 3 (Fri): DBMS Advanced: Distributed DBs & CAP
+              </li>
+              <div class="day-content">
+                <p>Understand distributed databases and the CAP theorem.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 4 (Sat): DBMS Advanced: DBMS MCQs
+              </li>
+              <div class="day-content">
+                <p>Solve multiple-choice questions on DBMS concepts.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-8')">
+            Week 8: Oct 6 – Oct 11 (OS Basics)
+          </li>
+          <div id="cs-week-8" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 6 (Mon): OS Basics: OS Intro & Functions
+              </li>
+              <div class="day-content">
+                <p>Learn the role and functions of operating systems.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 7 (Tue): OS Basics: System Calls
+              </li>
+              <div class="day-content">
+                <p>Understand system calls and their types in OS.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 8 (Wed): OS Basics: Processes & PCB
+              </li>
+              <div class="day-content">
+                <p>
+                  Study processes, Process Control Block (PCB), and process
+                  states.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 9 (Thu): OS Basics: Threads
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn about threads, multithreading, and user vs kernel
+                  threads.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 10 (Fri): OS Basics: CPU Scheduling
+              </li>
+              <div class="day-content">
+                <p>
+                  Explore CPU scheduling algorithms (e.g., FCFS, SJF, Round
+                  Robin).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 11 (Sat): OS Basics: Scheduling Practice
+              </li>
+              <div class="day-content">
+                <p>Practice problems on CPU scheduling algorithms.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-9')">
+            Week 9: Oct 13 – Oct 18 (OS Advanced)
+          </li>
+          <div id="cs-week-9" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 13 (Mon): OS Basics: Deadlocks
+              </li>
+              <div class="day-content">
+                <p>
+                  Study deadlock conditions, prevention, and detection
+                  techniques.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 14 (Tue): OS Advanced: Memory Management
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn memory management techniques (e.g., partitioning,
+                  paging).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 15 (Wed): OS Advanced: Virtual Memory
+              </li>
+              <div class="day-content">
+                <p>Understand virtual memory and demand paging.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 16 (Thu): OS Advanced: Page Replacement
+              </li>
+              <div class="day-content">
+                <p>Study page replacement algorithms (e.g., LRU, FIFO).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 17 (Fri): OS Advanced: Disk Scheduling
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn disk scheduling algorithms (e.g., FCFS, SSTF, SCAN).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 18 (Sat): OS Advanced: File Systems
+              </li>
+              <div class="day-content">
+                <p>Explore file system structures and operations.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-10')">
+            Week 10: Oct 20 – Oct 25 (OS Advanced & Integration Week)
+          </li>
+          <div id="cs-week-10" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 20 (Mon): OS Advanced: Synchronization
+              </li>
+              <div class="day-content">
+                <p>
+                  Study synchronization mechanisms (e.g., semaphores, monitors).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 21 (Tue): OS Advanced: OS MCQs
+              </li>
+              <div class="day-content">
+                <p>Solve multiple-choice questions on OS concepts.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 22 (Wed): Integration Week: OOP + DBMS Interview Qs
+              </li>
+              <div class="day-content">
+                <p>
+                  Practice interview questions combining OOP and DBMS concepts.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 23 (Thu): Integration Week: OS + SQL Qs
+              </li>
+              <div class="day-content">
+                <p>
+                  Practice interview questions combining OS and SQL concepts.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 24 (Fri): Integration Week: Mini Project (Library Mgmt
+                System)
+              </li>
+              <div class="day-content">
+                <p>
+                  Work on a mini project implementing a Library Management
+                  System using OOP and DBMS.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 25 (Sat): Integration Week: SQL Practice
+              </li>
+              <div class="day-content">
+                <p>
+                  Solve additional SQL problems to reinforce integration
+                  concepts.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-11')">
+            Week 11: Oct 27 – Nov 1 (Integration Week & Advanced SQL + OS)
+          </li>
+          <div id="cs-week-11" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 27 (Mon): Integration Week: System Design Basics
+              </li>
+              <div class="day-content">
+                <p>
+                  Learn basics of system design (e.g., scalability, load
+                  balancing).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 28 (Tue): Integration Week: Caching & Sharding
+              </li>
+              <div class="day-content">
+                <p>
+                  Study caching mechanisms and database sharding techniques.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 29 (Wed): Integration Week: Mock CS Interview
+              </li>
+              <div class="day-content">
+                <p>Participate in a mock interview covering CS fundamentals.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 30 (Thu): Advanced SQL + OS: Window Functions
+              </li>
+              <div class="day-content">
+                <p>Learn SQL window functions (e.g., ROW_NUMBER, RANK).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Oct 31 (Fri): Advanced SQL + OS: CTEs
+              </li>
+              <div class="day-content">
+                <p>Study Common Table Expressions (CTEs) in SQL.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 1 (Sat): Advanced SQL + OS: OS Synchronization Problems
+              </li>
+              <div class="day-content">
+                <p>
+                  Solve problems related to OS synchronization (e.g.,
+                  producer-consumer).
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-12')">
+            Week 12: Nov 3 – Nov 8 (Advanced SQL + OS)
+          </li>
+          <div id="cs-week-12" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 3 (Mon): Advanced SQL + OS: OS Interview Qs
+              </li>
+              <div class="day-content">
+                <p>Practice OS-related interview questions.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 4 (Tue): Advanced SQL + OS: DBMS Interview Qs
+              </li>
+              <div class="day-content">
+                <p>Practice DBMS-related interview questions.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 5 (Wed): Advanced SQL + OS: OOP Design Qs
+              </li>
+              <div class="day-content">
+                <p>
+                  Practice OOP design questions (e.g., designing a parking lot
+                  system).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 6 (Thu): Advanced SQL + OS: SQL Mock Test
+              </li>
+              <div class="day-content">
+                <p>Take a mock test with SQL problems of varying difficulty.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 7 (Fri): Revision Week: Revise OOPs Core
+              </li>
+              <div class="day-content">
+                <p>
+                  Revise core OOP concepts (classes, inheritance, polymorphism).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 8 (Sat): Revision Week: Revise DBMS Core
+              </li>
+              <div class="day-content">
+                <p>Revise core DBMS concepts (normalization, ER model).</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-13')">
+            Week 13: Nov 10 – Nov 15 (Revision Week)
+          </li>
+          <div id="cs-week-13" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 10 (Mon): Revision Week: Revise OS Core
+              </li>
+              <div class="day-content">
+                <p>Revise core OS concepts (processes, scheduling, memory).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 11 (Tue): Revision Week: Revise SQL Advanced
+              </li>
+              <div class="day-content">
+                <p>Revise advanced SQL concepts (window functions, CTEs).</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 12 (Wed): Revision Week: Mixed MCQ Test
+              </li>
+              <div class="day-content">
+                <p>Solve a mixed MCQ test covering OOP, DBMS, OS, and SQL.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 13 (Thu): Revision Week: Mini REST API Project
+              </li>
+              <div class="day-content">
+                <p>
+                  Build a mini REST API project using Java (e.g., Spring Boot).
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 14 (Fri): Revision Week: Mock Interview 1
+              </li>
+              <div class="day-content">
+                <p>Participate in a mock interview covering CS fundamentals.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 15 (Sat): Final Sprint: Mock Interview 2
+              </li>
+              <div class="day-content">
+                <p>Take a second mock interview to practice CS topics.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-14')">
+            Week 14: Nov 17 – Nov 22 (Final Sprint)
+          </li>
+          <div id="cs-week-14" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 17 (Mon): Final Sprint: Mock Interview 3
+              </li>
+              <div class="day-content">
+                <p>Take a third mock interview to refine CS skills.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 18 (Tue): Final Sprint: SQL Final Revision
+              </li>
+              <div class="day-content">
+                <p>Revise all SQL concepts, focusing on advanced queries.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 19 (Wed): Final Sprint: DBMS Final Revision
+              </li>
+              <div class="day-content">
+                <p>
+                  Revise all DBMS concepts, including indexing and distributed
+                  DBs.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 20 (Thu): Final Sprint: OS Final Revision
+              </li>
+              <div class="day-content">
+                <p>
+                  Revise all OS concepts, including synchronization and memory.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 21 (Fri): Final Sprint: OOP Final Revision
+              </li>
+              <div class="day-content">
+                <p>Revise all OOP concepts, focusing on design patterns.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 22 (Sat): Final Sprint: Full Mock Interviews
+              </li>
+              <div class="day-content">
+                <p>
+                  Participate in full-length mock interviews covering all CS
+                  topics.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-15')">
+            Week 15: Nov 24 – Nov 29 (OOP Basics)
+          </li>
+          <div id="cs-week-15" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 24 (Mon): OOP Basics: Classes & Objects
+              </li>
+              <div class="day-content">
+                <p>
+                  Revisit classes and objects, focusing on practical
+                  implementation.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 25 (Tue): OOP Basics: Encapsulation
+              </li>
+              <div class="day-content">
+                <p>Revisit encapsulation and data hiding techniques.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 26 (Wed): OOP Basics: Inheritance
+              </li>
+              <div class="day-content">
+                <p>Revisit inheritance and method overriding.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 27 (Thu): OOP Basics: Polymorphism
+              </li>
+              <div class="day-content">
+                <p>Revisit polymorphism, focusing on runtime behavior.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 28 (Fri): OOP Basics: Abstraction
+              </li>
+              <div class="day-content">
+                <p>
+                  Revisit abstraction using interfaces and abstract classes.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Nov 29 (Sat): OOP Basics: Static & Final
+              </li>
+              <div class="day-content">
+                <p>
+                  Revisit static and final keywords with practical examples.
+                </p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-16')">
+            Week 16: Dec 1 – Dec 6 (OOP Basics & Advanced)
+          </li>
+          <div id="cs-week-16" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 1 (Mon): OOP Basics: Practice OOP MCQs
+              </li>
+              <div class="day-content">
+                <p>Solve OOP MCQs to reinforce core concepts.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 2 (Tue): OOP Advanced: Object Class Methods
+              </li>
+              <div class="day-content">
+                <p>Revisit Object class methods with practical applications.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 3 (Wed): OOP Advanced: Inner Classes
+              </li>
+              <div class="day-content">
+                <p>Revisit inner classes and their use cases.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 4 (Thu): OOP Advanced: Exception Handling
+              </li>
+              <div class="day-content">
+                <p>Revisit exception handling with advanced scenarios.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 5 (Fri): OOP Advanced: Generics
+              </li>
+              <div class="day-content">
+                <p>Revisit generics for type-safe programming.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 6 (Sat): OOP Advanced: Collections Basics
+              </li>
+              <div class="day-content">
+                <p>Revisit Java Collections Framework basics.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-17')">
+            Week 17: Dec 8 – Dec 13 (OOP Advanced & DBMS Basics)
+          </li>
+          <div id="cs-week-17" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 8 (Mon): OOP Advanced: SOLID Principles
+              </li>
+              <div class="day-content">
+                <p>Revisit SOLID principles with practical examples.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 9 (Tue): OOP Advanced: Design Patterns
+              </li>
+              <div class="day-content">
+                <p>Revisit design patterns, focusing on implementation.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 10 (Wed): DBMS Basics: Intro to DBMS
+              </li>
+              <div class="day-content">
+                <p>Revisit DBMS fundamentals and their applications.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 11 (Thu): DBMS Basics: Data Models
+              </li>
+              <div class="day-content">
+                <p>Revisit data models, focusing on relational models.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 12 (Fri): DBMS Basics: ER Model
+              </li>
+              <div class="day-content">
+                <p>Revisit ER modeling and diagram creation.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 13 (Sat): DBMS Basics: Relational Model & Keys
+              </li>
+              <div class="day-content">
+                <p>Revisit relational model and key constraints.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-18')">
+            Week 18: Dec 15 – Dec 20 (DBMS Basics & SQL Basics)
+          </li>
+          <div id="cs-week-18" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 15 (Mon): DBMS Basics: Constraints
+              </li>
+              <div class="day-content">
+                <p>Revisit database constraints and their enforcement.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 16 (Tue): DBMS Basics: Normalization
+              </li>
+              <div class="day-content">
+                <p>Revisit normalization techniques for database design.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 17 (Wed): DBMS Basics: Schema Design Practice
+              </li>
+              <div class="day-content">
+                <p>Practice designing schemas for real-world scenarios.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 18 (Thu): SQL Basics: SELECT & WHERE
+              </li>
+              <div class="day-content">
+                <p>Revisit SELECT and WHERE clauses for querying.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 19 (Fri): SQL Basics: Filtering Conditions
+              </li>
+              <div class="day-content">
+                <p>Revisit advanced filtering techniques in SQL.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 20 (Sat): SQL Basics: Aggregations
+              </li>
+              <div class="day-content">
+                <p>Revisit aggregation functions for data summarization.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-19')">
+            Week 19: Dec 22 – Dec 27 (SQL Basics & Advanced)
+          </li>
+          <div id="cs-week-19" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 22 (Mon): SQL Basics: GROUP BY & HAVING
+              </li>
+              <div class="day-content">
+                <p>Revisit GROUP BY and HAVING for grouping and filtering.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 23 (Tue): SQL Basics: ORDER BY
+              </li>
+              <div class="day-content">
+                <p>Revisit ORDER BY for sorting query results.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 24 (Wed): SQL Basics: Joins
+              </li>
+              <div class="day-content">
+                <p>
+                  Revisit SQL joins for combining data from multiple tables.
+                </p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 25 (Thu): SQL Basics: Practice SQL Easy Queries
+              </li>
+              <div class="day-content">
+                <p>Solve easy SQL queries to reinforce basics.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 26 (Fri): SQL Advanced: Nested Queries
+              </li>
+              <div class="day-content">
+                <p>Revisit nested queries for complex data retrieval.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 27 (Sat): SQL Advanced: Subqueries IN/ANY/ALL
+              </li>
+              <div class="day-content">
+                <p>Revisit subqueries using IN, ANY, and ALL operators.</p>
+              </div>
+            </ul>
+          </div>
+          <li class="week-item" onclick="toggleWeek('cs-week-20')">
+            Week 20: Dec 29 – Dec 31 (SQL Advanced)
+          </li>
+          <div id="cs-week-20" class="week-content">
+            <ul class="day-list">
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 29 (Mon): SQL Advanced: EXISTS
+              </li>
+              <div class="day-content">
+                <p>Revisit EXISTS clause for subquery validation.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 30 (Tue): SQL Advanced: Set Operations
+              </li>
+              <div class="day-content">
+                <p>Revisit UNION, INTERSECT, and EXCEPT operations.</p>
+              </div>
+              <li class="day-item" onclick="toggleDay(this)">
+                Dec 31 (Wed): SQL Advanced: Views & Indexes
+              </li>
+              <div class="day-content">
+                <p>
+                  Revisit database views and indexing for performance
+                  optimization.
+                </p>
+              </div>
+            </ul>
+          </div>
+        </ul>
+      </div>
+
+      <hr />
+    </div>
+
+    <script>
+      function showRoadmap(roadmapId) {
+        document.querySelectorAll(".roadmap-section").forEach((section) => {
+          section.classList.remove("active");
+        });
+        document.getElementById(roadmapId).classList.add("active");
+        document.querySelectorAll(".roadmap-selector button").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document
+          .getElementById(roadmapId.split("-")[0] + "-btn")
+          .classList.add("active");
+        // Collapse all weeks and days when switching roadmaps
+        document.querySelectorAll(".week-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".day-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".week-item, .day-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+      }
+
+      function toggleWeek(weekId) {
+        const weekContent = document.getElementById(weekId);
+        const isVisible = weekContent.classList.contains("active");
+        // Collapse all weeks and days
+        document.querySelectorAll(".week-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".day-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".week-item, .day-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        // Toggle the selected week
+        if (!isVisible) {
+          weekContent.classList.add("active");
+          document
+            .querySelector([(onclick = "toggleWeek('${weekId}')")])
+            .classList.add("active");
+        }
+      }
+
+      function toggleDay(element) {
+        const dayContent = element.nextElementSibling;
+        const isVisible = dayContent.classList.contains("active");
+        // Collapse all day contents
+        document.querySelectorAll(".day-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".day-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        // Toggle the selected day
+        if (!isVisible) {
+          dayContent.classList.add("active");
+          element.classList.add("active");
+        }
+      }
+      document
+        .getElementById("dsa-btn")
+        .addEventListener("click", () => showRoadmap("dsa-roadmap"));
+      document
+        .getElementById("cs-btn")
+        .addEventListener("click", () => showRoadmap("cs-roadmap"));
+    </script>
+  </body>
+</html>
