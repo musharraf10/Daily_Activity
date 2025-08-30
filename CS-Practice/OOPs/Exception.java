@@ -1,7 +1,3 @@
-// Perfect 🚀 Let’s go deep but keep it clean, structured, and simple expert-to-expert.
-// We’ll cover Exceptions first, then Generics.
-
-
 //  🧠 1. Try–Catch, Checked vs Unchecked, and Custom Exceptions
 
 //  🔹 What are Exceptions?
