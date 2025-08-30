@@ -24,7 +24,7 @@
 // String s = list.get(0); // no cast needed
 // ```
 
-// Generics → **type safety**, **no casting**, **reusable code**.
+// Generics → ** type safety**, **no casting**, **reusable code**.
 
 // ---
 
