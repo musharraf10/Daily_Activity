@@ -220,12 +220,6 @@
 //  Use `HashMap` for key-value, `LinkedHashMap` if order matters.
 //  Use `ConcurrentHashMap` in multithreading.
 
-// ---
-
-// ⚡ That’s the complete theory of Java Collections Framework.
-
-// Do you want me to also create a visual diagram (flowchart style) for the hierarchy (List, Set, Map) so it’s easy to revise before interviews?
-
 
 //  🧠 Java Collections Framework (Interfaces, Classes & Methods)
 
@@ -442,7 +436,6 @@
 //  `Arrays.copyOf(arr, newLength)`
 //  `Arrays.equals(arr1, arr2)`
 
-// ---
 
 // ✅ So now you have:
 
