@@ -180,3 +180,183 @@
 // 👉 Pro Tip: SOLID isn’t a set of rules but guidelines. Sometimes breaking them is pragmatic, but knowing them ensures your design choices are conscious.
 
 
+//  🛒 Example: E-Commerce Order System
+//  1. Single Responsibility Principle (SRP)
+
+//  Problem: One class doing too many things.
+//  Example:
+
+//   ```java
+//   class OrderService {
+//       void createOrder() { ... }
+//       void calculateDiscount() { ... }
+//       void sendEmailConfirmation() { ... }
+//   }
+//   ```
+
+//   ❌ Violates SRP (order handling, discount, and email in one class).
+
+// ✅ Fix (split responsibilities):
+
+// ```java
+// class OrderService {
+//     void createOrder() { ... }
+// }
+
+// class DiscountService {
+//     double applyDiscount(double price) { return price  0.9; }
+// }
+
+// class EmailService {
+//     void sendConfirmation(String email) { ... }
+// }
+// ```
+
+// ---
+//  2. Open/Closed Principle (OCP)
+
+//  Requirement: Add new payment types without changing existing code.
+//  ❌ Bad:
+
+//   ```java
+//   class PaymentService {
+//       void pay(String type) {
+//           if(type.equals("CreditCard")) { ... }
+//           else if(type.equals("UPI")) { ... }
+//       }
+//   }
+//   ```
+
+//   (Every new payment type requires modifying this class.)
+
+// ✅ Good: Use polymorphism:
+
+// ```java
+// interface PaymentMethod {
+//     void pay(double amount);
+// }
+
+// class CreditCardPayment implements PaymentMethod {
+//     public void pay(double amount) { System.out.println("Paid by Credit Card: " + amount); }
+// }
+
+// class UpiPayment implements PaymentMethod {
+//     public void pay(double amount) { System.out.println("Paid via UPI: " + amount); }
+// }
+
+// class PaymentProcessor {
+//     private PaymentMethod method;
+//     PaymentProcessor(PaymentMethod method) { this.method = method; }
+//     void process(double amount) { method.pay(amount); }
+// }
+// ```
+
+// ➡ Add PayPal, Wallet, etc. by creating new classes, no need to modify `PaymentProcessor`.
+
+// ---
+//  3. Liskov Substitution Principle (LSP)
+
+//  ❌ Bad:
+
+//   ```java
+//   class Delivery {
+//       void deliver() { ... }
+//   }
+
+//   class StorePickup extends Delivery {
+//       @Override void deliver() {
+//           throw new UnsupportedOperationException("Pickup has no delivery!");
+//       }
+//   }
+//   ```
+
+//   (Subclass breaks the parent contract → violates LSP.)
+
+// ✅ Good: Separate concepts:
+
+// ```java
+// interface Delivery { void deliver(); }
+// class HomeDelivery implements Delivery {
+//     public void deliver() { System.out.println("Delivered to home"); }
+// }
+
+// class StorePickup { 
+//     void pickup() { System.out.println("Pickup at store"); }
+// }
+// ```
+
+// ---
+//  4. Interface Segregation Principle (ISP)
+
+//  ❌ Bad: One fat interface.
+
+//   ```java
+//   interface Notification {
+//       void sendEmail();
+//       void sendSMS();
+//       void sendPush();
+//   }
+
+//   class EmailNotifier implements Notification {
+//       public void sendEmail() { ... }
+//       public void sendSMS() { throw new UnsupportedOperationException(); }
+//       public void sendPush() { throw new UnsupportedOperationException(); }
+//   }
+//   ```
+//  ✅ Good: Smaller, focused interfaces.
+
+//   ```java
+//   interface EmailNotification { void sendEmail(); }
+//   interface SMSNotification { void sendSMS(); }
+//   interface PushNotification { void sendPush(); }
+
+//   class EmailNotifier implements EmailNotification {
+//       public void sendEmail() { System.out.println("Email sent!"); }
+//   }
+//   ```
+
+// ---
+//  5. Dependency Inversion Principle (DIP)
+
+//  ❌ Bad:
+
+//   ```java
+//   class OrderRepository {
+//       MySQLDatabase db = new MySQLDatabase();
+//       void saveOrder(Order o) { db.insert(o); }
+//   }
+//   ```
+
+//   (Hard-coded to MySQL.)
+
+//  ✅ Good: Depend on abstraction.
+
+//   ```java
+//   interface Database {
+//       void insert(Order o);
+//   }
+
+//   class MySQLDatabase implements Database {
+//       public void insert(Order o) { System.out.println("Saved in MySQL"); }
+//   }
+
+//   class MongoDatabase implements Database {
+//       public void insert(Order o) { System.out.println("Saved in MongoDB"); }
+//   }
+
+//   class OrderRepository {
+//       private Database db;
+//       OrderRepository(Database db) { this.db = db; }
+//       void saveOrder(Order o) { db.insert(o); }
+//   }
+//   ```
+
+// ➡ Now you can switch databases easily (even for testing with an in-memory DB).
+
+//  🔑 Takeaway
+
+//  SRP → Each class does one thing.
+//  OCP → Add new features via extension, not modification.
+//  LSP → Subclasses must behave like their parents.
+//  ISP → Small, specific interfaces.
+//  DIP → Depend on abstractions, not concrete classes.
