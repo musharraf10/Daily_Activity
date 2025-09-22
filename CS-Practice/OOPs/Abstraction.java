@@ -186,6 +186,3 @@ class Dog implements Animal, Pet {
 //     int add(int a, int b);
 // }
 // Calculator c = (x, y) -> x + y;
-
-
-//Code
