@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Birthday — Route Map</title>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Three.js and GSAP from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r127/three.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+      defer
+    ></script>
+
+    <style>
+      :root {
+        --bg1: #0b0320;
+        --bg2: #0f1b3a;
+        --neon-cyan: #00e6ff;
+        --neon-magenta: #b400ff;
+        --glass: rgba(255, 255, 255, 0.06);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: linear-gradient(180deg, var(--bg1), var(--bg2));
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      #terminal {
+        position: fixed;
+        inset: 0;
+        background: #070707;
+        color: #71ff71;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        padding: 22px;
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 12px;
+        box-sizing: border-box;
+      }
+      #lines {
+        white-space: pre-wrap;
+        overflow: hidden;
+        height: calc(100% - 44px);
+      }
+      #progressWrap {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
+        overflow: hidden;
+        width: 100%;
+      }
+      #progress {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(
+          90deg,
+          var(--neon-cyan),
+          var(--neon-magenta)
+        );
+        transition: width 0.25s;
+      }
+      #replayBtn {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        padding: 8px;
+        color: #fff;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        z-index: 60;
+      }
+      #glCanvas {
+        position: fixed;
+        inset: 0;
+        display: block;
+        z-index: 10;
+      }
+      #overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      #hint {
+        pointer-events: none;
+        margin-bottom: 18vh;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 14px;
+        opacity: 0.95;
+      }
+      .card {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(88%, 480px);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        padding: 18px;
+        color: #fff;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        pointer-events: auto;
+      }
+      #wishCard {
+        top: -420px;
+        transition: top 0.5s;
+        z-index: 55;
+        text-align: center;
+      }
+      #quoteCard {
+        bottom: -200px;
+        transition: bottom 0.4s;
+        z-index: 55;
+        text-align: center;
+      }
+      #controls {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 60;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .ctrlBtn {
+        background: rgba(0, 0, 0, 0.35);
+        padding: 8px;
+        border-radius: 8px;
+        color: #fff;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+      }
+      #fallback {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(180deg, var(--bg1), var(--bg2));
+        z-index: 100;
+        padding: 18px;
+        overflow: auto;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Terminal boot overlay -->
+    <div id="terminal" aria-hidden="false">
+      <div id="lines"></div>
+      <div id="progressWrap"><div id="progress"></div></div>
+    </div>
+    <div id="replayBtn" title="Replay Boot (R key)" style="display: none">
+      🔁 Replay
+    </div>
+
+    <!-- WebGL canvas -->
+    <canvas id="glCanvas"></canvas>
+
+    <!-- UI overlay -->
+    <div id="overlay" aria-hidden="true">
+      <div id="hint">
+        Swipe / Drag / Scroll to explore • Shift + Scroll to zoom • Drag up/down
+        for wishes/quote
+      </div>
+      <div
+        id="wishCard"
+        class="card"
+        role="dialog"
+        aria-label="Birthday wishes"
+      >
+        <h2 style="margin: 0 0 8px 0">Happy Birthday, Bro! 🎉</h2>
+        <p id="wishText" style="margin: 0; line-height: 1.4">
+          This special day marks another loop in the amazing route of our lives.
+          May the year ahead be full of wins, coffee, and chaos that turns into
+          awesome memories.
+        </p>
+      </div>
+      <div
+        id="quoteCard"
+        class="card"
+        role="note"
+        aria-label="Quote"
+        style="width: min(92%, 360px)"
+      >
+        <p id="quoteText" style="margin: 0; font-weight: 600">
+          "Age is just a feature release."
+        </p>
+      </div>
+    </div>
+
+    <!-- Control cluster -->
+    <div id="controls">
+      <div class="ctrlBtn" id="musicBtn" title="Toggle music">🎵 Off</div>
+      <div class="ctrlBtn" id="pauseBtn" title="Pause/Resume">⏸ Pause</div>
+      <div class="ctrlBtn" id="replayBoot" title="Replay Boot">🔁 Boot</div>
+    </div>
+
+    <!-- Fallback gallery -->
+    <div id="fallback">
+      <h2 style="font-family: 'Poppins', sans-serif">
+        Birthday Gallery (Fallback)
+      </h2>
+      <p>WebGL isn't available. Here's a simple gallery you can still view.</p>
+      <div
+        id="fallbackGrid"
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 12px;
+          margin-top: 12px;
+        "
+      ></div>
+    </div>
+
+    <script>
+      /* -----------------------------
+      CONFIG: Edit these to customize
+      ----------------------------- */
+      const fakeLines = [
+        "[INIT] mounting-heart: OK",
+        "[SCAN] friendship.db ... 62 files found",
+        "[PROC] check-friendship-integrity... OK",
+        "[SPAWN] confetti_service PID=4821",
+        "[LOAD] memories_cache... done",
+        "[AUTH] secret_handshake... accepted",
+        "[BOOT] unlocking-wishes...",
+        "[SYNC] syncing-photos: preparing textures",
+        "[WAIT] finalizing... 99%",
+      ];
+      const checkpointImages = [
+        "https://picsum.photos/800/600?random=11",
+        "https://picsum.photos/800/600?random=12",
+        "https://picsum.photos/800/600?random=13",
+        "https://picsum.photos/800/600?random=14",
+        "https://picsum.photos/800/600?random=15",
+        "https://picsum.photos/800/600?random=16",
+      ];
+      let quotes = [
+        "Level up: +1 year, +100 XP.",
+        "Age is a feature, not a bug.",
+        "Another loop, another memory.",
+        "Friends are the real treasure.",
+        "Onward to more milestones!",
+        "Keep shipping, keep smiling.",
+      ];
+      const WISH_TEXT = `Bro — ten years of nonsense, a thousand chai fights, and a million memories. May this year bring the boldest wins. Happy Birthday!`;
+
+      /* -----------------------------
+      Terminal boot
+      ----------------------------- */
+      const terminal = document.getElementById("terminal");
+      const linesEl = document.getElementById("lines");
+      const progressEl = document.getElementById("progress");
+      const replayBtn = document.getElementById("replayBtn");
+      const replayBootBtn = document.getElementById("replayBoot");
+
+      document.getElementById("wishText").textContent = WISH_TEXT;
+      document.getElementById("quoteText").textContent = quotes[0];
+
+      function playBootAnimation(cb) {
+        linesEl.textContent = "";
+        progressEl.style.width = "0%";
+        terminal.style.display = "flex";
+        document.getElementById("overlay").style.display = "none";
+        replayBtn.style.display = "none";
+        let i = 0;
+        function next() {
+          if (i < fakeLines.length) {
+            linesEl.textContent += fakeLines[i] + "\n";
+            i++;
+            progressEl.style.width = (i / fakeLines.length) * 100 + "%";
+            const extra = fakeLines[i - 1].includes("...") ? 600 : 200;
+            setTimeout(next, 250 + Math.random() * 200 + extra);
+          } else {
+            setTimeout(() => {
+              linesEl.textContent += "[OK] boot completed\n";
+              progressEl.style.width = "100%";
+              setTimeout(() => {
+                gsap.to(terminal, {
+                  duration: 0.6,
+                  y: -30,
+                  autoAlpha: 0,
+                  onComplete: () => {
+                    terminal.style.display = "none";
+                    replayBtn.style.display = "block";
+                    document.getElementById("overlay").style.display = "flex";
+                    if (typeof cb === "function") cb();
+                  },
+                });
+              }, 500);
+            }, 600);
+          }
+        }
+        next();
+      }
+
+      replayBtn.onclick = () => playBootAnimation(startApp);
+      replayBootBtn.onclick = () => playBootAnimation(startApp);
+      window.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "r") playBootAnimation(startApp);
+      });
+
+      /* -----------------------------
+      Three.js Route Map
+      ----------------------------- */
+      let renderer, scene, camera, composer;
+      let curve,
+        tubeMesh,
+        checkpoints = [],
+        popupPlanes = [],
+        labels = [];
+      let clock = new THREE.Clock();
+      let t = 0; // Progress along curve [0,1]
+      let speed = 0; // Speed for t
+      let prevT = 0;
+      let isPointerDown = false,
+        pointerStartX = 0,
+        pointerStartY = 0;
+      let pointerLastX = 0,
+        pointerLastY = 0,
+        pointerVel = 0;
+      let quoteIndex = 0,
+        loopCount = 0;
+      let canAnimate = true;
+      let cameraDistance = 8; // Distance from curve for zoom
+      let isPaused = false;
+      const canvas = document.getElementById("glCanvas");
+      const fallback = document.getElementById("fallback");
+      const fallbackGrid = document.getElementById("fallbackGrid");
+      const wishCard = document.getElementById("wishCard");
+      const quoteCard = document.getElementById("quoteCard");
+      const hintEl = document.getElementById("hint");
+      const musicBtn = document.getElementById("musicBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      function webGLAvailable() {
+        try {
+          const c = document.createElement("canvas");
+          return !!(
+            window.WebGLRenderingContext &&
+            (c.getContext("webgl") || c.getContext("experimental-webgl"))
+          );
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function shuffleArray(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function preloadTextures(urls) {
+        const loader = new THREE.TextureLoader();
+        const promises = urls.map(
+          (u) =>
+            new Promise((res, rej) => {
+              loader.load(
+                u,
+                (tex) => {
+                  tex.anisotropy = Math.min(
+                    8,
+                    renderer.capabilities.getMaxAnisotropy()
+                  );
+                  res(tex);
+                },
+                undefined,
+                (err) => {
+                  console.warn("Texture load failed:", u, err);
+                  const p = new THREE.Texture(generatePlaceholderCanvas());
+                  p.needsUpdate = true;
+                  res(p);
+                }
+              );
+            })
+        );
+        return Promise.all(promises);
+      }
+
+      function generatePlaceholderCanvas() {
+        const c = document.createElement("canvas");
+        c.width = 512;
+        c.height = 384;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#334";
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = "#88c";
+        ctx.fillRect(20, 20, c.width - 40, c.height - 40);
+        ctx.fillStyle = "#fff";
+        ctx.font = "24px sans-serif";
+        ctx.fillText("Image", 30, 60);
+        return c;
+      }
+
+      /* Create text sprite for labels */
+      function createTextSprite(message) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 256;
+        canvas.height = 64;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#fff";
+        ctx.font = "24px Poppins, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+        const texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+        const material = new THREE.SpriteMaterial({
+          map: texture,
+          transparent: true,
+        });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(1.2, 0.3, 1);
+        return sprite;
+      }
+
+      function buildRouteMap(textures) {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(
+          60,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          2000
+        );
+        camera.position.set(0, 2.8, 8);
+
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x080820, 0.8);
+        scene.add(hemi);
+        const dir = new THREE.DirectionalLight(0xffffff, 0.5);
+        dir.position.set(5, 10, 5);
+        scene.add(dir);
+
+        // Create control points for the curve
+        const pts = [];
+        const N = checkpointImages.length;
+        for (let i = 0; i < N; i++) {
+          const a = (i / N) * Math.PI * 2;
+          const rx = 5 + Math.sin(a * 2.3) * 1.5;
+          const ry = Math.sin(a * 1.2) * 1.0 + 0.5;
+          const rz = 5 + Math.cos(a * 1.1) * 1.2;
+          pts.push(new THREE.Vector3(Math.cos(a) * rx, ry, Math.sin(a) * rz));
+        }
+        curve = new THREE.CatmullRomCurve3(pts, true, "catmullrom", 0.5);
+
+        // Glowing tube
+        const tubeGeom = new THREE.TubeGeometry(curve, 300, 0.06, 8, true);
+        const tubeMat = new THREE.MeshBasicMaterial({
+          color: new THREE.Color(
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--neon-cyan")
+              .trim()
+          ),
+          transparent: true,
+          opacity: 0.12,
+        });
+        tubeMesh = new THREE.Mesh(tubeGeom, tubeMat);
+        scene.add(tubeMesh);
+
+        // Path highlight
+        const lineMat = new THREE.LineBasicMaterial({
+          color: new THREE.Color(
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--neon-magenta")
+              .trim()
+          ),
+          linewidth: 2,
+          transparent: true,
+          opacity: 0.22,
+        });
+        const ptsLine = curve.getSpacedPoints(250);
+        const lineGeom = new THREE.BufferGeometry().setFromPoints(ptsLine);
+        const pathLine = new THREE.Line(lineGeom, lineMat);
+        scene.add(pathLine);
+
+        // Checkpoints and popups
+        checkpoints = [];
+        popupPlanes = [];
+        labels = [];
+        const cpCount = checkpointImages.length;
+        for (let i = 0; i < cpCount; i++) {
+          const u = i / cpCount;
+          const pos = curve.getPointAt(u);
+          // Marker
+          const markerGeo = new THREE.SphereGeometry(0.12, 12, 12);
+          const markerMat = new THREE.MeshStandardMaterial({
+            color: 0x00ffd6,
+            emissive: 0x003f3f,
+            emissiveIntensity: 0.6,
+            metalness: 0.2,
+            roughness: 0.6,
+          });
+          const marker = new THREE.Mesh(markerGeo, markerMat);
+          marker.position.copy(pos);
+          scene.add(marker);
+          checkpoints.push({ u, marker, index: i });
+
+          // Popup plane
+          const pw = 2.6,
+            ph = 1.8;
+          const planeGeo = new THREE.PlaneGeometry(pw, ph);
+          const planeMat = new THREE.MeshStandardMaterial({
+            map: textures[i],
+            side: THREE.DoubleSide,
+            transparent: true,
+            toneMapped: false,
+          });
+          const plane = new THREE.Mesh(planeGeo, planeMat);
+          const normal = curve.getTangentAt(u).clone().normalize();
+          const offset = normal.clone().multiplyScalar(0.9);
+          plane.position.copy(pos.clone().add(offset));
+          plane.lookAt(plane.position.clone().add(normal));
+          plane.userData = { shown: false, index: i };
+          plane.scale.set(0.0001, 0.0001, 0.0001);
+          scene.add(plane);
+          popupPlanes.push(plane);
+
+          // Label sprite
+          const label = createTextSprite(`Memory #${i + 1}`);
+          label.position.copy(
+            pos
+              .clone()
+              .add(normal.clone().multiplyScalar(1.2))
+              .add(new THREE.Vector3(0, 0.5, 0))
+          );
+          label.userData = { shown: false };
+          label.scale.set(0, 0, 0);
+          scene.add(label);
+          labels.push(label);
+        }
+
+        // Particle points
+        const particleCount = 200;
+        const pGeom = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+          const u = Math.random();
+          const p = curve.getPointAt(u);
+          positions[i * 3] = p.x + (Math.random() - 0.5) * 0.6;
+          positions[i * 3 + 1] = p.y + (Math.random() - 0.5) * 0.4;
+          positions[i * 3 + 2] = p.z + (Math.random() - 0.5) * 0.6;
+        }
+        pGeom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        const pMat = new THREE.PointsMaterial({
+          size: 0.03,
+          color: new THREE.Color(
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--neon-magenta")
+              .trim()
+          ),
+          transparent: true,
+          opacity: 0.7,
+        });
+        const points = new THREE.Points(pGeom, pMat);
+        scene.add(points);
+
+        // Starfield background
+        const starCount = 1000;
+        const starGeom = new THREE.BufferGeometry();
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+          starPositions[i * 3] = (Math.random() - 0.5) * 200;
+          starPositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+          starPositions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+        }
+        starGeom.setAttribute(
+          "position",
+          new THREE.BufferAttribute(starPositions, 3)
+        );
+        const starMat = new THREE.PointsMaterial({
+          size: 0.1,
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.5,
+        });
+        const stars = new THREE.Points(starGeom, starMat);
+        scene.add(stars);
+
+        // Subtle background sphere
+        const bgGeo = new THREE.SphereGeometry(60, 32, 16);
+        const bgMat = new THREE.MeshBasicMaterial({
+          color: 0x02030a,
+          side: THREE.BackSide,
+        });
+        const bg = new THREE.Mesh(bgGeo, bgMat);
+        scene.add(bg);
+      }
+
+      function startRenderer() {
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        window.addEventListener("resize", onWindowResize);
+      }
+
+      function updatePopupsAndLabels() {
+        const threshold = 0.025;
+        for (let i = 0; i < popupPlanes.length; i++) {
+          const plane = popupPlanes[i];
+          const label = labels[i];
+          const u = checkpoints[i].u;
+          const circularDiff = Math.min(Math.abs(t - u), 1 - Math.abs(t - u));
+          if (circularDiff < threshold && !plane.userData.shown) {
+            plane.userData.shown = true;
+            label.userData.shown = true;
+            plane.lookAt(camera.position);
+            gsap.killTweensOf(plane.scale);
+            gsap.to(plane.scale, {
+              x: 1,
+              y: 1,
+              z: 1,
+              duration: 0.6,
+              ease: "back.out(1.2)",
+            });
+            gsap.to(label.scale, {
+              x: 1.2,
+              y: 0.3,
+              z: 1,
+              duration: 0.6,
+              ease: "back.out(1.2)",
+            });
+            gsap.fromTo(
+              checkpoints[i].marker.material.emissiveIntensity,
+              { val: 0.2 },
+              {
+                val: 1.6,
+                duration: 0.6,
+                onUpdate: function () {
+                  checkpoints[i].marker.material.emissiveIntensity =
+                    this.targets()[0].val;
+                },
+              }
+            );
+            const quote = quotes[quoteIndex % quotes.length] || "";
+            document.getElementById("quoteText").textContent = quote;
+            quoteIndex++;
+            gsap.delayedCall(2.4, () => {
+              if (plane.userData && label.userData) {
+                gsap.to(plane.scale, {
+                  x: 0.0001,
+                  y: 0.0001,
+                  z: 0.0001,
+                  duration: 0.45,
+                  ease: "power2.inOut",
+                  onComplete: () => {
+                    plane.userData.shown = false;
+                  },
+                });
+                gsap.to(label.scale, {
+                  x: 0,
+                  y: 0,
+                  z: 0,
+                  duration: 0.45,
+                  ease: "power2.inOut",
+                  onComplete: () => {
+                    label.userData.shown = false;
+                  },
+                });
+              }
+            });
+          }
+        }
+      }
+
+      function applyCameraPosition(camera, curve, t) {
+        if (!curve || typeof curve.getPointAt !== "function") {
+          console.warn("applyCameraPosition: invalid curve", curve);
+          return;
+        }
+        t = Math.max(0, Math.min(1, t));
+        const point = curve.getPointAt(t);
+        if (!point) {
+          console.warn(
+            "applyCameraPosition: getPointAt returned undefined for t =",
+            t
+          );
+          return;
+        }
+        const tangent = curve.getTangentAt(t).normalize();
+        camera.position
+          .copy(point)
+          .add(tangent.clone().multiplyScalar(cameraDistance));
+        camera.position.y += 2.8;
+        const lookAtT = Math.min(t + 0.01, 1);
+        const lookAtPoint = curve.getPointAt(lookAtT);
+        if (lookAtPoint) {
+          camera.lookAt(lookAtPoint);
+        }
+      }
+
+      function animate() {
+        if (
+          !canAnimate ||
+          !scene ||
+          !camera ||
+          !renderer ||
+          !curve ||
+          isPaused
+        ) {
+          return;
+        }
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        t = (t + speed * delta) % 1;
+        if (t < 0) t += 1;
+        speed *= 0.92; // Friction
+        applyCameraPosition(camera, curve, t);
+        updatePopupsAndLabels();
+        renderer.render(scene, camera);
+      }
+
+      function addInputControls() {
+        // Wheel for movement and zoom
+        window.addEventListener(
+          "wheel",
+          (e) => {
+            if (e.shiftKey) {
+              cameraDistance = Math.max(
+                4,
+                Math.min(12, cameraDistance + e.deltaY * 0.01)
+              );
+            } else {
+              speed += e.deltaY > 0 ? 0.0035 : -0.0035;
+            }
+          },
+          { passive: true }
+        );
+
+        // Pointer drag
+        canvas.addEventListener("pointerdown", (e) => {
+          isPointerDown = true;
+          pointerStartX = e.clientX;
+          pointerStartY = e.clientY;
+          pointerLastX = e.clientX;
+          pointerLastY = e.clientY;
+          pointerVel = 0;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!isPointerDown) return;
+          const dx = e.clientX - pointerLastX;
+          const dy = e.clientY - pointerLastY;
+          pointerLastX = e.clientX;
+          pointerLastY = e.clientY;
+          speed += dx * 0.0008;
+          pointerVel = dx;
+        });
+        canvas.addEventListener("pointerup", (e) => {
+          isPointerDown = false;
+          speed += pointerVel * 0.0004;
+        });
+
+        // Touch gestures
+        let touchStartY = null;
+        let touchScaleStart = null;
+        canvas.addEventListener(
+          "touchstart",
+          (ev) => {
+            if (ev.touches.length === 1) {
+              touchStartY = ev.touches[0].clientY;
+            } else if (ev.touches.length === 2) {
+              const dx = ev.touches[0].clientX - ev.touches[1].clientX;
+              const dy = ev.touches[0].clientY - ev.touches[1].clientY;
+              touchScaleStart = Math.sqrt(dx * dx + dy * dy);
+            }
+          },
+          { passive: true }
+        );
+        canvas.addEventListener(
+          "touchmove",
+          (ev) => {
+            if (ev.touches.length === 2 && touchScaleStart !== null) {
+              const dx = ev.touches[0].clientX - ev.touches[1].clientX;
+              const dy = ev.touches[0].clientY - ev.touches[1].clientY;
+              const scale = Math.sqrt(dx * dx + dy * dy);
+              cameraDistance = Math.max(
+                4,
+                Math.min(12, cameraDistance * (touchScaleStart / scale))
+              );
+              touchScaleStart = scale;
+              ev.preventDefault();
+            }
+          },
+          { passive: false }
+        );
+        canvas.addEventListener(
+          "touchend",
+          (ev) => {
+            if (!touchStartY) return;
+            const endY = ev.changedTouches[0]
+              ? ev.changedTouches[0].clientY
+              : touchStartY;
+            const dy = touchStartY - endY;
+            if (Math.abs(dy) > 70) {
+              if (dy > 0) {
+                showWishesTemporarily();
+              } else {
+                showQuoteTemporarily();
+              }
+            }
+            touchStartY = null;
+            touchScaleStart = null;
+          },
+          { passive: true }
+        );
+
+        // Keyboard
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+            speed += 0.02;
+          } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+            speed -= 0.02;
+          } else if (e.key.toLowerCase() === "w") {
+            showWishesTemporarily();
+          } else if (e.key.toLowerCase() === "q") {
+            showQuoteTemporarily();
+          } else if (e.key.toLowerCase() === "p") {
+            togglePause();
+          }
+        });
+
+        // Pause button
+        pauseBtn.addEventListener("click", togglePause);
+      }
+
+      function togglePause() {
+        isPaused = !isPaused;
+        pauseBtn.textContent = isPaused ? "▶ Play" : "⏸ Pause";
+        if (!isPaused) requestAnimationFrame(animate);
+      }
+
+      let wishTimeout = null,
+        quoteTimeout = null;
+      function showWishesTemporarily() {
+        clearTimeout(wishTimeout);
+        wishCard.style.top = "9vh";
+        gsap.to(wishCard, { duration: 0.45, y: 0, ease: "power3.out" });
+        wishTimeout = setTimeout(() => {
+          gsap.to(wishCard, {
+            duration: 0.5,
+            y: -20,
+            onComplete: () => {
+              wishCard.style.top = "-420px";
+            },
+          });
+        }, 4200);
+      }
+      function showQuoteTemporarily() {
+        clearTimeout(quoteTimeout);
+        quoteCard.style.bottom = "6vh";
+        gsap.to(quoteCard, { duration: 0.45, y: 0, ease: "power3.out" });
+        quoteTimeout = setTimeout(() => {
+          gsap.to(quoteCard, {
+            duration: 0.5,
+            y: 20,
+            onComplete: () => {
+              quoteCard.style.bottom = "-200px";
+            },
+          });
+        }, 3200);
+      }
+
+      let audio = null;
+      function setupMusic() {
+        audio = new Audio();
+        audio.loop = true;
+        audio.src = ""; // Add a URL or base64 audio
+        musicBtn.addEventListener("click", () => {
+          if (!audio.src) {
+            musicBtn.textContent = "🎵 Off";
+            alert("No music source set. Edit audio.src in setupMusic.");
+            return;
+          }
+          if (audio.paused) {
+            audio.play();
+            musicBtn.textContent = "🎵 On";
+          } else {
+            audio.pause();
+            musicBtn.textContent = "🎵 Off";
+          }
+        });
+      }
+
+      function buildFallbackGallery() {
+        fallback.style.display = "block";
+        const urls = checkpointImages;
+        urls.forEach((u) => {
+          const d = document.createElement("div");
+          d.style.borderRadius = "8px";
+          d.style.overflow = "hidden";
+          d.style.background = "#111";
+          const img = document.createElement("img");
+          img.src = u;
+          img.style.width = "100%";
+          img.style.height = "auto";
+          img.alt = "photo";
+          d.appendChild(img);
+          fallbackGrid.appendChild(d);
+        });
+      }
+
+      function onWindowResize() {
+        if (!renderer) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      function startApp() {
+        setTimeout(
+          () =>
+            gsap.to(hintEl, {
+              duration: 1.2,
+              opacity: 0.7,
+              y: -10,
+              ease: "power2.out",
+            }),
+          4000
+        );
+        if (!webGLAvailable()) {
+          buildFallbackGallery();
+          return;
+        }
+        startRenderer();
+        preloadTextures(checkpointImages)
+          .then((textures) => {
+            buildRouteMap(textures);
+            t = 0;
+            speed = 0;
+            prevT = 0;
+            loopCount = 0;
+            quoteIndex = 0;
+            addInputControls();
+            setupMusic();
+            gsap.fromTo(
+              hintEl,
+              { autoAlpha: 0, y: 10 },
+              { autoAlpha: 1, y: 0, duration: 1.1, delay: 0.2 }
+            );
+            clock.startTime = performance.now();
+            canAnimate = true;
+            requestAnimationFrame(animate);
+          })
+          .catch((err) => {
+            console.error("Texture preload error", err);
+            buildFallbackGallery();
+          });
+      }
+
+      function waitForLibsThenStart() {
+        function poll() {
+          if (window.THREE && window.gsap) {
+            playBootAnimation(startApp);
+          } else {
+            setTimeout(poll, 120);
+          }
+        }
+        poll();
+      }
+      waitForLibsThenStart();
+    </script>
+  </body>
+</html>

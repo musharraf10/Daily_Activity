@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday - Jabeer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          #0a0a0a 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        color: white;
+      }
+
+      #terminal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px;
+        transition: opacity 0.8s ease-out;
+      }
+
+      #terminal-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .terminal-content {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        color: #00ff00;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      .terminal-line {
+        margin-bottom: 8px;
+        opacity: 0;
+        animation: fadeInLine 0.3s ease-out forwards;
+      }
+
+      @keyframes fadeInLine {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #333;
+        margin: 15px 0;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00ff00, #00ffff);
+        width: 0;
+        transition: width 0.5s ease-out;
+      }
+
+      .boot-complete {
+        color: #00ffff;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 15px;
+        font-size: 16px;
+      }
+
+      #scene-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+      }
+
+      canvas {
+        display: block;
+        cursor: grab;
+      }
+
+      canvas:active {
+        cursor: grabbing;
+      }
+
+      .ui-overlay {
+        position: fixed;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .instructions {
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 8px 15px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        opacity: 1;
+        transition: opacity 2s ease-out;
+        font-size: 12px;
+      }
+
+      .instructions.fade-out {
+        opacity: 0;
+      }
+
+      .controls {
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .control-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.2);
+        border: 2px solid #00ffff;
+        color: #00ffff;
+        cursor: pointer;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .control-btn:hover {
+        background: rgba(0, 255, 255, 0.4);
+        transform: scale(1.1);
+      }
+
+      .popup-card {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(15px);
+        border: 2px solid #00ffff;
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 90%;
+        width: 360px;
+        text-align: center;
+        z-index: 200;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .popup-card.show {
+        transform: translateX(-50%) scale(1);
+      }
+
+      .wish-card {
+        top: 30px;
+      }
+
+      .quote-card {
+        bottom: 30px;
+      }
+
+      .popup-card h2 {
+        color: #00ffff;
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      .popup-card p {
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      .checkpoint-image {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        max-width: 80%;
+        max-height: 40vh;
+        border-radius: 10px;
+        border: 3px solid #00ffff;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        z-index: 150;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        opacity: 0;
+      }
+
+      .checkpoint-image.show {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+
+      .checkpoint-quote {
+        position: fixed;
+        top: 65%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px 20px;
+        border-radius: 20px;
+        border: 1px solid #00ffff;
+        max-width: 80%;
+        text-align: center;
+        z-index: 155;
+        opacity: 0;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        font-size: 12px;
+      }
+
+      .checkpoint-quote.show {
+        opacity: 1;
+      }
+
+      .gesture-feedback {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 255, 255, 0.05);
+        z-index: 190;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .gesture-feedback.show {
+        opacity: 0.1;
+      }
+
+      @media (max-width: 768px) {
+        .terminal-content {
+          font-size: 12px;
+          padding: 15px;
+        }
+
+        .instructions {
+          font-size: 10px;
+          padding: 6px 12px;
+        }
+
+        .control-btn {
+          width: 32px;
+          height: 32px;
+          font-size: 14px;
+        }
+
+        .popup-card {
+          width: 85%;
+          padding: 15px;
+        }
+
+        .popup-card h2 {
+          font-size: 18px;
+        }
+
+        .popup-card p {
+          font-size: 12px;
+        }
+
+        .checkpoint-image {
+          max-height: 35vh;
+        }
+
+        .checkpoint-quote {
+          font-size: 11px;
+          padding: 8px 15px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .terminal-line,
+        .popup-card,
+        .checkpoint-image,
+        .checkpoint-quote,
+        .gesture-feedback {
+          transition: none;
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="terminal-overlay">
+      <div class="terminal-content">
+        <div id="terminal-lines"></div>
+        <div class="boot-complete" id="boot-complete" style="display: none">
+          🎉 JABEER BIRTHDAY SYSTEM INITIALIZED 🎉<br />
+          LOADING 24 YEARS JOURNEY...
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="scene-container"></div>
+
+    <div class="gesture-feedback" id="gesture-feedback"></div>
+
+    <div class="ui-overlay instructions" id="instructions">
+      <div>🎂 Swipe/scroll to explore memories</div>
+      <div style="font-size: 10px; margin-top: 5px">
+        Swipe up for wishes • Swipe down for quotes • Click ♪ to play music
+      </div>
+    </div>
+
+    <div class="ui-overlay controls">
+      <button class="control-btn" id="reboot-btn" title="Replay Boot">⟲</button>
+      <button class="control-btn" id="music-btn" title="Toggle Music">♪</button>
+    </div>
+
+    <div class="popup-card wish-card" id="wish-card">
+      <h2>🎉 Happy Birthday, Jabeer! 🎉</h2>
+      <p>
+        Wishing you an incredible year ahead filled with amazing adventures,
+        beautiful memories, and all the happiness your heart can hold. May this
+        new chapter bring you closer to your dreams!
+      </p>
+    </div>
+
+    <div class="popup-card quote-card" id="quote-card">
+      <h2>Birthday Wisdom</h2>
+      <p id="random-quote">
+        Another year older, another year wiser, another year more awesome!
+      </p>
+    </div>
+
+    <img class="checkpoint-image" id="checkpoint-image" src="" alt="Memory" />
+    <div class="checkpoint-quote" id="checkpoint-quote"></div>
+
+    <!-- Audio Element with Cloud-Hosted URL -->
+    <audio id="background-music" loop>
+      <source src="https://your-cloud-service.com/song.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <script>
+      const CONFIG = {
+        bootLines: [
+          "[INIT] 🎂 birthday-system v2.0.1",
+          "[SCAN] 📸 memory-database ... 847 files found",
+          "[PROC] 💝 loading-friendship-protocols...",
+          "[AUTH] 🔐 verifying-awesome-person... CONFIRMED",
+          "[LOAD] 🌟 wishes-cache initialized",
+          "[SPAWN] 🎉 confetti-service PID=2025",
+          "[MOUNT] 💕 love-life ... OK",
+          "[BOOT] 🚀 launching-celebration-mode...",
+        ],
+        images: [
+          "https://picsum.photos/400/300?random=1&birthday",
+          "https://picsum.photos/400/300?random=2&memories",
+          "https://picsum.photos/400/300?random=3&celebration",
+          "https://picsum.photos/400/300?random=4&friends",
+          "https://picsum.photos/400/300?random=5&adventure",
+          "https://picsum.photos/400/300?random=6&happiness",
+          "https://picsum.photos/400/300?random=7&dreams",
+          "https://picsum.photos/400/300?random=8&journey",
+        ],
+        quotes: [
+          "Level up: +1 year, +100 XP, +infinite possibilities! 🎮",
+          "Another year of awesome adventures awaits! 🌟",
+          "Birthdays are nature's way of telling us to eat cake! 🍰",
+          "Growing older is mandatory, growing up is optional! 😄",
+          "Life is a journey, and today marks another beautiful milestone! 🛤️",
+          "May your birthday be the start of the best chapter yet! 📚",
+          "Celebrating the amazing person you are today and always! 🎊",
+          "Here's to another year of making incredible memories! 📸",
+        ],
+      };
+
+      let scene,
+        camera,
+        renderer,
+        routePath,
+        checkpoints = [];
+      let pathPosition = 0,
+        targetPosition = 0;
+      let isDragging = false,
+        lastMouseY = 0;
+      let currentQuoteIndex = 0,
+        quotesShuffled = [...CONFIG.quotes];
+      let hasShownWishCard = false;
+      let lastGestureTime = 0;
+      let isMusicPlaying = false;
+      const audio = document.getElementById("background-music");
+      const musicBtn = document.getElementById("music-btn");
+
+      audio.volume = 0.5; // Set default volume to 50%
+
+      function startBootSequence() {
+        const terminalLines = document.getElementById("terminal-lines");
+        const progressFill = document.getElementById("progress-fill");
+        const bootComplete = document.getElementById("boot-complete");
+
+        let lineIndex = 0;
+
+        function addLine() {
+          if (lineIndex < CONFIG.bootLines.length) {
+            const line = document.createElement("div");
+            line.className = "terminal-line";
+            line.textContent = CONFIG.bootLines[lineIndex];
+            terminalLines.appendChild(line);
+
+            const progress = ((lineIndex + 1) / CONFIG.bootLines.length) * 100;
+            progressFill.style.width = progress + "%";
+
+            lineIndex++;
+            setTimeout(addLine, 400 + Math.random() * 300);
+          } else {
+            setTimeout(() => {
+              bootComplete.style.display = "block";
+              setTimeout(() => {
+                document
+                  .getElementById("terminal-overlay")
+                  .classList.add("hidden");
+                setTimeout(() => {
+                  document.getElementById("terminal-overlay").style.display =
+                    "none";
+                  initializeScene();
+                  // Prompt user to enable music after boot
+                  setTimeout(() => {
+                    if (!isMusicPlaying) {
+                      alert("Click the ♪ button to play birthday music!");
+                    }
+                  }, 1000);
+                }, 800);
+              }, 1200);
+            }, 400);
+          }
+        }
+
+        addLine();
+      }
+
+      function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      }
+
+      function initializeScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document
+          .getElementById("scene-container")
+          .appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0x00ffff, 1.2, 100);
+        pointLight.position.set(0, 10, 0);
+        scene.add(pointLight);
+
+        const pathPoints = [];
+        const numPoints = 20;
+        const radius = 15;
+        for (let i = 0; i < numPoints; i++) {
+          const angle = (i / numPoints) * Math.PI * 2;
+          const x = Math.cos(angle) * radius + Math.sin(angle * 3) * 3;
+          const z = Math.sin(angle) * radius + Math.cos(angle * 2) * 4;
+          const y = Math.sin(angle * 4) * 2;
+          pathPoints.push(new THREE.Vector3(x, y, z));
+        }
+        routePath = new THREE.CatmullRomCurve3(pathPoints, true);
+
+        const tubeGeometry = new THREE.TubeGeometry(
+          routePath,
+          200,
+          0.2,
+          8,
+          true
+        );
+        const tubeMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00ffff,
+          transparent: true,
+          opacity: 0.8,
+        });
+        const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+        scene.add(tube);
+
+        const glowGeometry = new THREE.TubeGeometry(
+          routePath,
+          200,
+          0.4,
+          8,
+          true
+        );
+        const glowMaterial = new THREE.MeshBasicMaterial({
+          color: 0x00ffff,
+          transparent: true,
+          opacity: 0.2,
+        });
+        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+        scene.add(glow);
+
+        createCheckpoints();
+        createStarField();
+        updateCameraPosition();
+        setupEventListeners();
+        animate();
+
+        setTimeout(() => {
+          document.getElementById("instructions").classList.add("fade-out");
+        }, 4000);
+      }
+
+      function createCheckpoints() {
+        CONFIG.images.forEach((imageUrl, index) => {
+          const t = index / CONFIG.images.length;
+          const position = routePath.getPointAt(t);
+
+          const geometry = new THREE.SphereGeometry(0.3, 16, 16);
+          const material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            transparent: true,
+            opacity: 0.8,
+          });
+          const checkpoint = new THREE.Mesh(geometry, material);
+          checkpoint.position.copy(position);
+          checkpoint.position.y += 2;
+
+          const glowGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+          const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ff00,
+            transparent: true,
+            opacity: 0.3,
+          });
+          const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
+          glowSphere.position.copy(checkpoint.position);
+
+          scene.add(checkpoint);
+          scene.add(glowSphere);
+
+          checkpoints.push({
+            mesh: checkpoint,
+            glow: glowSphere,
+            position: t,
+            imageUrl: imageUrl,
+            shown: false,
+          });
+
+          gsap.to(checkpoint.rotation, {
+            y: Math.PI * 2,
+            duration: 4,
+            repeat: -1,
+            ease: "none",
+          });
+
+          gsap.to(glowSphere.scale, {
+            x: 1.5,
+            y: 1.5,
+            z: 1.5,
+            duration: 1,
+            repeat: -1,
+            yoyo: true,
+            ease: "power2.inOut",
+          });
+        });
+      }
+
+      function createStarField() {
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsMaterial = new THREE.PointsMaterial({
+          color: 0xffffff,
+          size: 0.8,
+          transparent: true,
+          opacity: 0.7,
+        });
+
+        const starsVertices = [];
+        for (let i = 0; i < 500; i++) {
+          const x = (Math.random() - 0.5) * 150;
+          const y = (Math.random() - 0.5) * 150;
+          const z = (Math.random() - 0.5) * 150;
+          starsVertices.push(x, y, z);
+        }
+
+        starsGeometry.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(starsVertices, 3)
+        );
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+      }
+
+      function updateCameraPosition() {
+        const position = routePath.getPointAt(pathPosition);
+        const lookAhead = routePath.getPointAt((pathPosition + 0.02) % 1);
+
+        camera.position.copy(position);
+        camera.position.y += 3;
+        camera.lookAt(lookAhead);
+
+        checkNearbyCheckpoints();
+      }
+
+      function checkNearbyCheckpoints() {
+        const threshold = 0.05;
+
+        checkpoints.forEach((checkpoint, index) => {
+          const distance = Math.abs(checkpoint.position - pathPosition);
+          const wrappedDistance = Math.min(distance, 1 - distance);
+
+          if (wrappedDistance < threshold && !checkpoint.shown) {
+            showCheckpointImage(checkpoint, index);
+            checkpoint.shown = true;
+          } else if (wrappedDistance >= threshold && checkpoint.shown) {
+            hideCheckpointImage();
+            checkpoint.shown = false;
+          }
+        });
+      }
+
+      function showCheckpointImage(checkpoint, index) {
+        const img = document.getElementById("checkpoint-image");
+        const quote = document.getElementById("checkpoint-quote");
+
+        img.src = checkpoint.imageUrl;
+        img.classList.add("show");
+
+        quote.textContent =
+          quotesShuffled[currentQuoteIndex % quotesShuffled.length];
+        quote.classList.add("show");
+
+        currentQuoteIndex++;
+        if (currentQuoteIndex >= quotesShuffled.length) {
+          quotesShuffled = shuffleArray(CONFIG.quotes);
+          currentQuoteIndex = 0;
+        }
+      }
+
+      function hideCheckpointImage() {
+        document.getElementById("checkpoint-image").classList.remove("show");
+        document.getElementById("checkpoint-quote").classList.remove("show");
+      }
+
+      function setupEventListeners() {
+        let isMouseDown = false;
+        let gestureStartY = 0;
+        let gestureStartX = 0;
+        let gestureDeltaY = 0;
+        let isCardGesture = false;
+
+        renderer.domElement.addEventListener("mousedown", (e) => {
+          isMouseDown = true;
+          lastMouseY = e.clientY;
+          renderer.domElement.style.cursor = "grabbing";
+        });
+
+        renderer.domElement.addEventListener("mousemove", (e) => {
+          if (isMouseDown) {
+            const deltaY = e.clientY - lastMouseY;
+            targetPosition += deltaY * 0.0004;
+            targetPosition = Math.max(0, Math.min(1, targetPosition));
+            lastMouseY = e.clientY;
+          }
+        });
+
+        renderer.domElement.addEventListener("mouseup", () => {
+          isMouseDown = false;
+          renderer.domElement.style.cursor = "grab";
+        });
+
+        renderer.domElement.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          targetPosition += e.deltaY * 0.0002;
+          targetPosition = Math.max(0, Math.min(1, targetPosition));
+        });
+
+        renderer.domElement.addEventListener("touchstart", (e) => {
+          gestureStartY = e.touches[0].clientY;
+          gestureStartX = e.touches[0].clientX;
+          gestureDeltaY = 0;
+          isCardGesture = false;
+        });
+
+        renderer.domElement.addEventListener("touchmove", (e) => {
+          e.preventDefault();
+          const currentY = e.touches[0].clientY;
+          const currentX = e.touches[0].clientX;
+          const deltaY = currentY - gestureStartY;
+          const deltaX = Math.abs(currentX - gestureStartX);
+          gestureDeltaY += deltaY;
+
+          if (Math.abs(gestureDeltaY) > 30) {
+            document.getElementById("gesture-feedback").classList.add("show");
+          }
+
+          if (deltaX < 40 && Math.abs(gestureDeltaY) < 120) {
+            targetPosition += deltaY * 0.0004;
+            targetPosition = Math.max(0, Math.min(1, targetPosition));
+          } else {
+            isCardGesture = true;
+          }
+
+          gestureStartY = currentY;
+          gestureStartX = currentX;
+        });
+
+        renderer.domElement.addEventListener("touchend", (e) => {
+          document.getElementById("gesture-feedback").classList.remove("show");
+          const now = Date.now();
+          if (
+            isCardGesture &&
+            Math.abs(gestureDeltaY) > 120 &&
+            now - lastGestureTime > 1000
+          ) {
+            if (gestureDeltaY > 0) {
+              showWishCard();
+            } else {
+              showQuoteCard();
+            }
+            targetPosition = pathPosition;
+            lastGestureTime = now;
+          }
+          gestureDeltaY = 0;
+          isCardGesture = false;
+        });
+
+        document.addEventListener("keydown", (e) => {
+          switch (e.key) {
+            case "ArrowLeft":
+            case "ArrowUp":
+              targetPosition -= 0.015;
+              targetPosition = Math.max(0, targetPosition);
+              break;
+            case "ArrowRight":
+            case "ArrowDown":
+              targetPosition += 0.015;
+              targetPosition = Math.min(1, targetPosition);
+              break;
+            case " ":
+              e.preventDefault();
+              showWishCard();
+              break;
+          }
+        });
+
+        document
+          .getElementById("reboot-btn")
+          .addEventListener("click", rebootSystem);
+        document
+          .getElementById("music-btn")
+          .addEventListener("click", toggleMusic);
+
+        window.addEventListener("resize", () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      }
+
+      function showWishCard() {
+        if (hasShownWishCard) return;
+        const card = document.getElementById("wish-card");
+        card.classList.add("show");
+        hasShownWishCard = true;
+        setTimeout(() => card.classList.remove("show"), 6000);
+      }
+
+      function showQuoteCard() {
+        const card = document.getElementById("quote-card");
+        const quote = document.getElementById("random-quote");
+        quote.textContent =
+          CONFIG.quotes[Math.floor(Math.random() * CONFIG.quotes.length)];
+        card.classList.add("show");
+        setTimeout(() => card.classList.remove("show"), 6000);
+      }
+
+      function rebootSystem() {
+        document.getElementById("terminal-overlay").style.display = "flex";
+        document.getElementById("terminal-overlay").classList.remove("hidden");
+        document.getElementById("terminal-lines").innerHTML = "";
+        document.getElementById("progress-fill").style.width = "0%";
+        document.getElementById("boot-complete").style.display = "none";
+        pathPosition = 0;
+        targetPosition = 0;
+        hasShownWishCard = false;
+        document.getElementById("wish-card").classList.remove("show");
+        document.getElementById("quote-card").classList.remove("show");
+        hideCheckpointImage();
+        audio.pause();
+        isMusicPlaying = false;
+        musicBtn.style.color = "white";
+        musicBtn.innerHTML = "♪";
+        startBootSequence();
+      }
+
+      function toggleMusic() {
+        if (isMusicPlaying) {
+          audio.pause();
+          musicBtn.style.color = "white";
+          musicBtn.innerHTML = "♪";
+        } else {
+          audio.play().catch((e) => {
+            console.log("Audio playback failed:", e);
+          });
+          musicBtn.style.color = "#00ffff";
+          musicBtn.innerHTML = "⏸";
+        }
+        isMusicPlaying = !isMusicPlaying;
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        pathPosition += (targetPosition - pathPosition) * 0.05;
+        if (pathPosition < 0) pathPosition += 1;
+        if (pathPosition > 1) pathPosition -= 1;
+        updateCameraPosition();
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener("load", () => {
+        startBootSequence();
+      });
+    </script>
+  </body>
+</html>
