@@ -25,6 +25,7 @@
         touch-action: manipulation;
       }
 
+      /* Cinematic Background */
       .cinematic-bg {
         position: fixed;
         top: 0;
@@ -100,6 +101,7 @@
         }
       }
 
+      /* Terminal Boot Overlay - Mobile First */
       #terminal-overlay {
         position: fixed;
         top: 0;
@@ -192,6 +194,7 @@
         }
       }
 
+      /* Main 3D Scene Container */
       #scene-container {
         position: relative;
         width: 100%;
@@ -204,12 +207,14 @@
         touch-action: none;
       }
 
+      /* Mobile-First UI Overlays */
       .ui-overlay {
         position: fixed;
         pointer-events: none;
         z-index: 100;
       }
 
+      /* Cinematic HUD */
       .hud-container {
         position: fixed;
         top: 0;
@@ -256,6 +261,7 @@
         border-top: none;
       }
 
+      /* Mobile Instructions */
       .mobile-instructions {
         position: fixed;
         bottom: 20px;
@@ -288,6 +294,7 @@
         color: #00ffff;
       }
 
+      /* Floating Control Panel */
       .control-panel {
         position: fixed;
         top: 20px;
@@ -327,6 +334,7 @@
         box-shadow: 0 15px 35px rgba(0, 255, 255, 0.4);
       }
 
+      /* Immersive Popup Cards */
       .popup-card {
         position: fixed;
         left: 50%;
@@ -365,6 +373,7 @@
         color: rgba(255, 255, 255, 0.9);
       }
 
+      /* Cinematic Checkpoint Display */
       .checkpoint-container {
         position: fixed;
         top: 50%;
@@ -406,6 +415,7 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       }
 
+      /* Journey Progress Indicator */
       .journey-progress {
         position: fixed;
         bottom: 60px;
@@ -428,6 +438,7 @@
         box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
       }
 
+      /* Particle Effects Overlay */
       .particles-overlay {
         position: fixed;
         top: 0;
@@ -449,6 +460,7 @@
         }
       }
 
+      /* Responsive Typography */
       @media (max-width: 480px) {
         .terminal-content {
           font-size: 11px;
@@ -466,6 +478,7 @@
         }
       }
 
+      /* High-end device enhancements */
       @media (min-width: 1024px) {
         .film-grain {
           opacity: 0.3;
@@ -481,6 +494,7 @@
         }
       }
 
+      /* Landscape orientation adjustments */
       @media (orientation: landscape) and (max-height: 600px) {
         .checkpoint-container {
           max-height: 70vh;
@@ -496,6 +510,7 @@
         }
       }
 
+      /* Reduce Motion Support */
       @media (prefers-reduced-motion: reduce) {
         .film-grain,
         .particles-overlay {
@@ -513,6 +528,7 @@
         }
       }
 
+      /* Loading States */
       .loading-spinner {
         position: fixed;
         top: 50%;
@@ -539,10 +555,12 @@
     </style>
   </head>
   <body>
+    <!-- Cinematic Background -->
     <div class="cinematic-bg"></div>
     <div class="film-grain"></div>
     <div class="particles-overlay"></div>
 
+    <!-- Terminal Boot Overlay -->
     <div id="terminal-overlay">
       <div class="terminal-content">
         <div id="terminal-lines"></div>
@@ -558,10 +576,13 @@
       </div>
     </div>
 
+    <!-- Loading Spinner -->
     <div class="loading-spinner" id="loading-spinner"></div>
 
+    <!-- Main Scene Container -->
     <div id="scene-container"></div>
 
+    <!-- Cinematic HUD -->
     <div class="hud-container">
       <div class="hud-corners top-left"></div>
       <div class="hud-corners top-right"></div>
@@ -569,21 +590,22 @@
       <div class="hud-corners bottom-right"></div>
     </div>
 
+    <!-- Journey Progress -->
     <div class="journey-progress">
       <div class="journey-fill" id="journey-fill"></div>
     </div>
 
+    <!-- Mobile Instructions -->
     <div class="mobile-instructions" id="mobile-instructions">
       <div>🎂 Swipe to explore your journey</div>
       <div class="gesture-hint">
         <span>👆 Wishes</span>
         <span>•</span>
         <span>👇 Quotes</span>
-        <span>•</span>
-        <span>♪ Music</span>
       </div>
     </div>
 
+    <!-- Floating Control Panel -->
     <div class="control-panel">
       <button class="control-btn" id="reboot-btn" title="Restart Journey">
         ⟲
@@ -594,6 +616,7 @@
       <button class="control-btn" id="music-btn" title="Toggle Audio">♪</button>
     </div>
 
+    <!-- Immersive Popup Cards -->
     <div class="popup-card" id="wish-card">
       <h2>🎉 HAPPY BIRTHDAY! 🎉</h2>
       <p>
@@ -611,22 +634,20 @@
       </p>
     </div>
 
+    <!-- Cinematic Checkpoint Display -->
     <div class="checkpoint-container" id="checkpoint-container">
       <img class="checkpoint-image" id="checkpoint-image" src="" alt="Memory" />
       <div class="checkpoint-quote" id="checkpoint-quote"></div>
     </div>
 
-    <!-- Audio Element with Cloud-Hosted URL -->
-    <audio id="background-music" loop>
-      <source src="https://your-cloud-service.com/song.mp3" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
-
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
     <script>
+      // Enhanced Configuration for Cinematic Experience
       const CONFIG = {
+        // Cinematic boot sequence
         bootLines: [
           "[INIT] 🎬 CINEMATIC_SYSTEM v3.0.1 - BIRTHDAY_EDITION",
           "[SCAN] 📱 mobile-optimization ... ENABLED",
@@ -638,6 +659,8 @@
           "[INIT] 🌟 particle-system ... ACTIVE",
           "[BOOT] 🚀 launching-cinematic-journey...",
         ],
+
+        // High-quality placeholder images
         images: [
           "https://picsum.photos/600/400?random=1&birthday",
           "https://picsum.photos/600/400?random=2&celebration",
@@ -650,6 +673,8 @@
           "https://picsum.photos/600/400?random=9&love",
           "https://picsum.photos/600/400?random=10&life",
         ],
+
+        // Cinematic birthday quotes
         quotes: [
           "🎮 Achievement Unlocked: +1 Year of Epic Adventures!",
           "🌟 Plot twist: This year is going to be your best chapter yet!",
@@ -662,6 +687,8 @@
           "🎨 Masterpiece in progress: Another year of beautiful moments!",
           "🎵 Hit song: 'Another Year of Being Absolutely Amazing'!",
         ],
+
+        // Visual settings
         visual: {
           pathComplexity: 25,
           routeRadius: 18,
@@ -671,6 +698,7 @@
         },
       };
 
+      // Global variables
       let scene,
         camera,
         renderer,
@@ -684,20 +712,19 @@
       let currentQuoteIndex = 0,
         quotesShuffled = [...CONFIG.quotes];
       let isInitialized = false;
-      let touchStartTime = 0,
-        touchStartY = 0,
-        touchVelocity = 0,
-        isVerticalGesture = false;
-      let isMusicPlaying = false;
-      const audio = document.getElementById("background-music");
-      const musicBtn = document.getElementById("music-btn");
 
-      audio.volume = 0.5; // Set default volume to 50%
+      // Enhanced mobile touch handling
+      let touchStartTime = 0;
+      let touchStartY = 0;
+      let touchVelocity = 0;
+      let isVerticalGesture = false;
 
+      // Terminal boot animation with cinematic effects
       function startBootSequence() {
         const terminalLines = document.getElementById("terminal-lines");
         const progressFill = document.getElementById("progress-fill");
         const bootComplete = document.getElementById("boot-complete");
+
         let lineIndex = 0;
 
         function addLine() {
@@ -707,11 +734,16 @@
             line.textContent = CONFIG.bootLines[lineIndex];
             line.style.animationDelay = `${lineIndex * 0.1}s`;
             terminalLines.appendChild(line);
+
+            // Enhanced progress with glow effect
             const progress = ((lineIndex + 1) / CONFIG.bootLines.length) * 100;
             progressFill.style.width = progress + "%";
+
+            // Add haptic feedback on mobile
             if (navigator.vibrate && lineIndex % 2 === 0) {
               navigator.vibrate(50);
             }
+
             lineIndex++;
             setTimeout(addLine, 700 + Math.random() * 300);
           } else {
@@ -725,19 +757,16 @@
                   document.getElementById("terminal-overlay").style.display =
                     "none";
                   initializeScene();
-                  setTimeout(() => {
-                    if (!isMusicPlaying) {
-                      alert("Click the ♪ button to play birthday music!");
-                    }
-                  }, 1000);
                 }, 1200);
               }, 2000);
             }, 800);
           }
         }
+
         addLine();
       }
 
+      // Shuffle utility with animation
       function shuffleArray(array) {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -747,16 +776,11 @@
         return shuffled;
       }
 
-      function showLoadingSpinner() {
-        document.getElementById("loading-spinner").style.display = "block";
-      }
-
-      function hideLoadingSpinner() {
-        document.getElementById("loading-spinner").style.display = "none";
-      }
-
+      // Enhanced scene initialization
       function initializeScene() {
         showLoadingSpinner();
+
+        // Scene setup with enhanced settings
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(
           75,
@@ -764,6 +788,7 @@
           0.1,
           1000
         );
+
         renderer = new THREE.WebGLRenderer({
           antialias: true,
           alpha: true,
@@ -774,23 +799,29 @@
         renderer.setClearColor(0x000000, 0);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
         document
           .getElementById("scene-container")
           .appendChild(renderer.domElement);
 
+        // Enhanced lighting system
         const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
         scene.add(ambientLight);
+
         const pointLight1 = new THREE.PointLight(0x00ffff, 1.5, 100);
         pointLight1.position.set(0, 20, 0);
         pointLight1.castShadow = true;
         scene.add(pointLight1);
+
         const pointLight2 = new THREE.PointLight(0xff00ff, 0.8, 50);
         pointLight2.position.set(15, 10, 15);
         scene.add(pointLight2);
 
+        // Create enhanced route path
         const pathPoints = [];
         const numPoints = CONFIG.visual.pathComplexity;
         const radius = CONFIG.visual.routeRadius;
+
         for (let i = 0; i < numPoints; i++) {
           const angle = (i / numPoints) * Math.PI * 2;
           const x = Math.cos(angle) * radius + Math.sin(angle * 3) * 4;
@@ -798,25 +829,37 @@
           const y = Math.sin(angle * 4) * 3 + Math.cos(angle * 6) * 1.5;
           pathPoints.push(new THREE.Vector3(x, y, z));
         }
+
         routePath = new THREE.CatmullRomCurve3(pathPoints, true);
 
+        // Enhanced glowing route
         createGlowingRoute();
         createCheckpoints();
         createEnhancedStarField();
         createFloatingParticles();
+
+        // Setup enhanced controls
         setupEnhancedControls();
+
+        // Position camera
         updateCameraPosition();
+
         hideLoadingSpinner();
         startAnimationLoop();
+
+        // Fade instructions after 6 seconds
         setTimeout(() => {
           document
             .getElementById("mobile-instructions")
             .classList.add("fade-out");
         }, 6000);
+
         isInitialized = true;
       }
 
+      // Create glowing route with multiple layers
       function createGlowingRoute() {
+        // Main route tube
         const tubeGeometry = new THREE.TubeGeometry(
           routePath,
           300,
@@ -832,6 +875,7 @@
         const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
         scene.add(tube);
 
+        // Outer glow
         const glowGeometry = new THREE.TubeGeometry(
           routePath,
           300,
@@ -847,226 +891,218 @@
         const glow = new THREE.Mesh(glowGeometry, glowMaterial);
         scene.add(glow);
 
-        gsap.to(tubeMaterial, {
-          opacity: 0.7,
-          duration: 2,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
+        // Animated inner core
+        const coreGeometry = new THREE.TubeGeometry(
+          routePath,
+          300,
+          0.05,
+          8,
+          true
+        );
+        const coreMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 1,
         });
-        gsap.to(glowMaterial, {
-          opacity: 0.2,
-          duration: 1.5,
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(core);
+
+        // Animate the core
+        gsap.to(coreMaterial, {
+          opacity: 0.5,
+          duration: 1,
           repeat: -1,
           yoyo: true,
-          ease: "sine.inOut",
+          ease: "power2.inOut",
         });
       }
 
+      // Enhanced checkpoint creation
       function createCheckpoints() {
         CONFIG.images.forEach((imageUrl, index) => {
           const t = index / CONFIG.images.length;
           const position = routePath.getPointAt(t);
 
-          const geometry = new THREE.SphereGeometry(0.4, 16, 16);
-          const material = new THREE.MeshBasicMaterial({
+          // Main checkpoint sphere
+          const geometry = new THREE.SphereGeometry(0.4, 20, 20);
+          const material = new THREE.MeshPhongMaterial({
             color: 0x00ff00,
             transparent: true,
             opacity: 0.8,
+            emissive: 0x003300,
           });
           const checkpoint = new THREE.Mesh(geometry, material);
           checkpoint.position.copy(position);
-          checkpoint.position.y += 2;
-          scene.add(checkpoint);
+          checkpoint.position.y += 3;
 
-          const glowGeometry = new THREE.SphereGeometry(0.6, 16, 16);
-          const glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-            transparent: true,
-            opacity: 0.3,
+          // Multiple glow layers for depth
+          const glowSizes = [0.6, 0.8, 1.2];
+          const glowOpacities = [0.4, 0.25, 0.15];
+          const glows = [];
+
+          glowSizes.forEach((size, i) => {
+            const glowGeometry = new THREE.SphereGeometry(size, 16, 16);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+              color: 0x00ff00,
+              transparent: true,
+              opacity: glowOpacities[i],
+            });
+            const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
+            glowSphere.position.copy(checkpoint.position);
+            glows.push(glowSphere);
+            scene.add(glowSphere);
           });
-          const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
-          glowSphere.position.copy(checkpoint.position);
-          scene.add(glowSphere);
+
+          scene.add(checkpoint);
 
           checkpoints.push({
             mesh: checkpoint,
-            glow: glowSphere,
+            glows: glows,
             position: t,
             imageUrl: imageUrl,
             shown: false,
           });
 
+          // Enhanced animations
           gsap.to(checkpoint.rotation, {
             y: Math.PI * 2,
-            duration: 4,
+            duration: 3 + Math.random() * 2,
             repeat: -1,
             ease: "none",
           });
-          gsap.to(glowSphere.scale, {
-            x: 1.5,
-            y: 1.5,
-            z: 1.5,
-            duration: 1,
-            repeat: -1,
-            yoyo: true,
-            ease: "power2.inOut",
+
+          glows.forEach((glow, i) => {
+            gsap.to(glow.scale, {
+              x: 1.3 + i * 0.2,
+              y: 1.3 + i * 0.2,
+              z: 1.3 + i * 0.2,
+              duration: 1.5 + i * 0.5,
+              repeat: -1,
+              yoyo: true,
+              ease: "power2.inOut",
+            });
           });
         });
       }
 
+      // Enhanced star field
       function createEnhancedStarField() {
         const starsGeometry = new THREE.BufferGeometry();
         const starsMaterial = new THREE.PointsMaterial({
           color: 0xffffff,
-          size: 0.5,
+          size: 2,
           transparent: true,
-          opacity: 0.7,
+          opacity: 0.8,
+          sizeAttenuation: true,
         });
+
         const starsVertices = [];
+        const starsColors = [];
+
         for (let i = 0; i < CONFIG.visual.starCount; i++) {
-          const x = (Math.random() - 0.5) * 200;
-          const y = (Math.random() - 0.5) * 200;
-          const z = (Math.random() - 0.5) * 200;
+          const x = (Math.random() - 0.5) * 300;
+          const y = (Math.random() - 0.5) * 300;
+          const z = (Math.random() - 0.5) * 300;
           starsVertices.push(x, y, z);
+
+          // Random star colors
+          const colorChoice = Math.random();
+          if (colorChoice < 0.7) {
+            starsColors.push(1, 1, 1); // White
+          } else if (colorChoice < 0.85) {
+            starsColors.push(0, 1, 1); // Cyan
+          } else {
+            starsColors.push(1, 0, 1); // Magenta
+          }
         }
+
         starsGeometry.setAttribute(
           "position",
           new THREE.Float32BufferAttribute(starsVertices, 3)
         );
+        starsGeometry.setAttribute(
+          "color",
+          new THREE.Float32BufferAttribute(starsColors, 3)
+        );
+
+        starsMaterial.vertexColors = true;
+
         const stars = new THREE.Points(starsGeometry, starsMaterial);
         scene.add(stars);
 
-        gsap.to(starsMaterial, {
-          opacity: 0.4,
-          duration: 2,
+        // Animate stars
+        gsap.to(stars.rotation, {
+          x: Math.PI * 2,
+          duration: 200,
           repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
+          ease: "none",
         });
       }
 
+      // Create floating particles
       function createFloatingParticles() {
-        const particleGeometry = new THREE.BufferGeometry();
-        const particleMaterial = new THREE.PointsMaterial({
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesMaterial = new THREE.PointsMaterial({
           color: 0x00ffff,
-          size: 0.3,
+          size: 3,
           transparent: true,
-          opacity: 0.5,
+          opacity: 0.6,
+          blending: THREE.AdditiveBlending,
         });
-        const particleVertices = [];
+
+        const particlesVertices = [];
+
         for (let i = 0; i < CONFIG.visual.particleCount; i++) {
           const x = (Math.random() - 0.5) * 100;
           const y = (Math.random() - 0.5) * 100;
           const z = (Math.random() - 0.5) * 100;
-          particleVertices.push(x, y, z);
+          particlesVertices.push(x, y, z);
         }
-        particleGeometry.setAttribute(
+
+        particlesGeometry.setAttribute(
           "position",
-          new THREE.Float32BufferAttribute(particleVertices, 3)
+          new THREE.Float32BufferAttribute(particlesVertices, 3)
         );
-        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        const particles = new THREE.Points(
+          particlesGeometry,
+          particlesMaterial
+        );
         scene.add(particles);
 
-        gsap.to(particles.position, {
-          y: "+=10",
-          duration: 10,
+        // Animate particles
+        gsap.to(particles.rotation, {
+          y: Math.PI * 2,
+          duration: 100,
           repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
+          ease: "none",
         });
       }
 
+      // Enhanced mobile-first controls
       function setupEnhancedControls() {
         const canvas = renderer.domElement;
-        let isMouseDown = false;
 
-        canvas.addEventListener("mousedown", (e) => {
-          isMouseDown = true;
-          lastTouchY = e.clientY;
-          velocity = 0;
+        // Touch controls with improved gestures
+        canvas.addEventListener("touchstart", handleTouchStart, {
+          passive: false,
         });
-
-        canvas.addEventListener("mousemove", (e) => {
-          if (isMouseDown) {
-            const deltaY = e.clientY - lastTouchY;
-            velocity = deltaY * 0.0005;
-            targetPosition += velocity;
-            targetPosition = Math.max(0, Math.min(1, targetPosition));
-            lastTouchY = e.clientY;
-          }
+        canvas.addEventListener("touchmove", handleTouchMove, {
+          passive: false,
         });
+        canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
-        canvas.addEventListener("mouseup", () => {
-          isMouseDown = false;
-        });
+        // Mouse controls for desktop
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
 
-        canvas.addEventListener("wheel", (e) => {
-          e.preventDefault();
-          targetPosition += e.deltaY * 0.0002;
-          targetPosition = Math.max(0, Math.min(1, targetPosition));
-        });
+        // Wheel control
+        canvas.addEventListener("wheel", handleWheel, { passive: false });
 
-        canvas.addEventListener("touchstart", (e) => {
-          e.preventDefault();
-          touchStartY = e.touches[0].clientY;
-          touchStartTime = Date.now();
-          touchVelocity = 0;
-          isVerticalGesture = false;
-        });
+        // Keyboard controls
+        document.addEventListener("keydown", handleKeyDown);
 
-        canvas.addEventListener("touchmove", (e) => {
-          e.preventDefault();
-          const currentY = e.touches[0].clientY;
-          const deltaY = currentY - touchStartY;
-          const deltaX = Math.abs(e.touches[0].clientX - touchStartY);
-          touchVelocity += deltaY;
-
-          if (deltaX < 40 && Math.abs(touchVelocity) < 120) {
-            targetPosition += deltaY * 0.0005;
-            targetPosition = Math.max(0, Math.min(1, targetPosition));
-          } else {
-            isVerticalGesture = true;
-          }
-          touchStartY = currentY;
-        });
-
-        canvas.addEventListener("touchend", (e) => {
-          const touchEndTime = Date.now();
-          if (
-            isVerticalGesture &&
-            Math.abs(touchVelocity) > 120 &&
-            touchEndTime - touchStartTime < 1000
-          ) {
-            if (touchVelocity > 0) {
-              showWishCard();
-            } else {
-              showQuoteCard();
-            }
-          }
-          touchVelocity = 0;
-          isVerticalGesture = false;
-        });
-
-        document.addEventListener("keydown", (e) => {
-          switch (e.key) {
-            case "ArrowLeft":
-            case "ArrowUp":
-              targetPosition -= 0.015;
-              targetPosition = Math.max(0, targetPosition);
-              break;
-            case "ArrowRight":
-            case "ArrowDown":
-              targetPosition += 0.015;
-              targetPosition = Math.min(1, targetPosition);
-              break;
-            case " ":
-              e.preventDefault();
-              showWishCard();
-              break;
-          }
-        });
-
+        // UI button controls
         document
           .getElementById("reboot-btn")
           .addEventListener("click", rebootSystem);
@@ -1077,113 +1113,289 @@
           .getElementById("music-btn")
           .addEventListener("click", toggleMusic);
 
-        window.addEventListener("resize", () => {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // Window resize
+        window.addEventListener("resize", handleResize);
       }
 
+      // Enhanced touch handling
+      function handleTouchStart(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+          touchStartTime = Date.now();
+          touchStartY = e.touches[0].clientY;
+          lastTouchY = touchStartY;
+          touchVelocity = 0;
+          isDragging = true;
+          isVerticalGesture = false;
+
+          // Haptic feedback
+          if (navigator.vibrate) {
+            navigator.vibrate(30);
+          }
+        }
+      }
+
+      function handleTouchMove(e) {
+        e.preventDefault();
+        if (isDragging && e.touches.length === 1) {
+          const currentY = e.touches[0].clientY;
+          const deltaY = currentY - lastTouchY;
+          const totalDelta = Math.abs(currentY - touchStartY);
+
+          if (totalDelta > 20) {
+            isVerticalGesture = true;
+          }
+
+          if (isVerticalGesture) {
+            touchVelocity = deltaY * 0.002;
+            targetPosition += touchVelocity;
+            updateJourneyProgress();
+          }
+
+          lastTouchY = currentY;
+        }
+      }
+
+      function handleTouchEnd(e) {
+        if (isDragging) {
+          const touchDuration = Date.now() - touchStartTime;
+          const totalDelta = lastTouchY - touchStartY;
+
+          // Gesture detection
+          if (touchDuration < 500 && Math.abs(totalDelta) > 80) {
+            if (totalDelta < 0) {
+              // Swipe up - show wishes
+              showWishCard();
+            } else {
+              // Swipe down - show quotes
+              showQuoteCard();
+            }
+          }
+
+          // Apply momentum
+          if (Math.abs(touchVelocity) > 0.001) {
+            gsap.to(this, {
+              duration: 1.5,
+              ease: "power2.out",
+              onUpdate: () => {
+                targetPosition += touchVelocity;
+                touchVelocity *= 0.95;
+                updateJourneyProgress();
+              },
+            });
+          }
+
+          isDragging = false;
+          isVerticalGesture = false;
+        }
+      }
+
+      // Mouse controls
+      function handleMouseDown(e) {
+        isDragging = true;
+        lastTouchY = e.clientY;
+        canvas.style.cursor = "grabbing";
+      }
+
+      function handleMouseMove(e) {
+        if (isDragging) {
+          const deltaY = e.clientY - lastTouchY;
+          targetPosition += deltaY * 0.001;
+          lastTouchY = e.clientY;
+          updateJourneyProgress();
+        }
+      }
+
+      function handleMouseUp() {
+        isDragging = false;
+        canvas.style.cursor = "grab";
+      }
+
+      // Wheel control
+      function handleWheel(e) {
+        e.preventDefault();
+        targetPosition += e.deltaY * 0.0005;
+        updateJourneyProgress();
+      }
+
+      // Keyboard controls
+      function handleKeyDown(e) {
+        switch (e.key) {
+          case "ArrowLeft":
+          case "ArrowUp":
+            targetPosition -= 0.02;
+            updateJourneyProgress();
+            break;
+          case "ArrowRight":
+          case "ArrowDown":
+            targetPosition += 0.02;
+            updateJourneyProgress();
+            break;
+          case " ":
+            e.preventDefault();
+            showWishCard();
+            break;
+          case "q":
+          case "Q":
+            showQuoteCard();
+            break;
+          case "f":
+          case "F":
+            toggleFullscreen();
+            break;
+          case "r":
+          case "R":
+            rebootSystem();
+            break;
+        }
+      }
+
+      // Update camera position with smooth interpolation
       function updateCameraPosition() {
+        if (!routePath) return;
+
+        // Smooth path following
+        pathPosition += (targetPosition - pathPosition) * 0.08;
+
+        // Handle wrapping
+        while (pathPosition < 0) pathPosition += 1;
+        while (pathPosition > 1) pathPosition -= 1;
+
         const position = routePath.getPointAt(pathPosition);
-        const lookAhead = routePath.getPointAt((pathPosition + 0.02) % 1);
+        const lookAhead = routePath.getPointAt((pathPosition + 0.03) % 1);
+
         camera.position.copy(position);
         camera.position.y += CONFIG.visual.cameraHeight;
         camera.lookAt(lookAhead);
-        updateJourneyProgress();
+
         checkNearbyCheckpoints();
       }
 
-      function updateJourneyProgress() {
-        const progress = (pathPosition % 1) * 100;
-        document.getElementById("journey-fill").style.width = `${progress}%`;
-      }
-
+      // Enhanced checkpoint detection
       function checkNearbyCheckpoints() {
-        const threshold = 0.05;
+        const threshold = 0.08;
+
         checkpoints.forEach((checkpoint, index) => {
           const distance = Math.abs(checkpoint.position - pathPosition);
           const wrappedDistance = Math.min(distance, 1 - distance);
+
           if (wrappedDistance < threshold && !checkpoint.shown) {
-            showCheckpoint(checkpoint, index);
+            showCheckpointImage(checkpoint, index);
             checkpoint.shown = true;
+
+            // Haptic feedback
+            if (navigator.vibrate) {
+              navigator.vibrate([100, 50, 100]);
+            }
           } else if (wrappedDistance >= threshold && checkpoint.shown) {
-            hideCheckpoint();
+            hideCheckpointImage();
             checkpoint.shown = false;
           }
         });
       }
 
-      function showCheckpoint(checkpoint, index) {
+      // Enhanced checkpoint image display
+      function showCheckpointImage(checkpoint, index) {
         const container = document.getElementById("checkpoint-container");
         const img = document.getElementById("checkpoint-image");
         const quote = document.getElementById("checkpoint-quote");
+
         img.src = checkpoint.imageUrl;
+        img.onload = () => {
+          container.classList.add("show");
+        };
+
         quote.textContent =
           quotesShuffled[currentQuoteIndex % quotesShuffled.length];
-        container.classList.add("show");
+
         currentQuoteIndex++;
         if (currentQuoteIndex >= quotesShuffled.length) {
           quotesShuffled = shuffleArray(CONFIG.quotes);
           currentQuoteIndex = 0;
         }
-        if (navigator.vibrate) {
-          navigator.vibrate(100);
-        }
       }
 
-      function hideCheckpoint() {
+      function hideCheckpointImage() {
         document
           .getElementById("checkpoint-container")
           .classList.remove("show");
       }
 
+      // Update journey progress bar
+      function updateJourneyProgress() {
+        const progressBar = document.getElementById("journey-fill");
+        const progress = (pathPosition * 100) % 100;
+        progressBar.style.width = progress + "%";
+      }
+
+      // Enhanced popup cards
       function showWishCard() {
         const card = document.getElementById("wish-card");
         card.classList.add("show");
-        setTimeout(() => card.classList.remove("show"), 6000);
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          card.classList.remove("show");
+        }, 5000);
+
+        // Haptic feedback
         if (navigator.vibrate) {
-          navigator.vibrate(50);
+          navigator.vibrate(200);
         }
       }
 
       function showQuoteCard() {
         const card = document.getElementById("quote-card");
         const quote = document.getElementById("random-quote");
+
         quote.textContent =
           CONFIG.quotes[Math.floor(Math.random() * CONFIG.quotes.length)];
         card.classList.add("show");
-        setTimeout(() => card.classList.remove("show"), 6000);
+
+        setTimeout(() => {
+          card.classList.remove("show");
+        }, 4000);
+
         if (navigator.vibrate) {
-          navigator.vibrate(50);
+          navigator.vibrate(150);
         }
       }
 
+      // System controls
       function rebootSystem() {
-        audio.pause();
-        isMusicPlaying = false;
-        musicBtn.style.color = "white";
-        musicBtn.innerHTML = "♪";
-        document.getElementById("terminal-overlay").style.display = "flex";
-        document.getElementById("terminal-overlay").classList.remove("hidden");
-        document.getElementById("terminal-lines").innerHTML = "";
-        document.getElementById("progress-fill").style.width = "0%";
-        document.getElementById("boot-complete").style.display = "none";
+        // Show loading
+        showLoadingSpinner();
+
+        // Reset state
         pathPosition = 0;
         targetPosition = 0;
         currentQuoteIndex = 0;
         quotesShuffled = shuffleArray(CONFIG.quotes);
-        checkpoints.forEach((checkpoint) => (checkpoint.shown = false));
+
+        // Hide UI elements
         document.getElementById("wish-card").classList.remove("show");
         document.getElementById("quote-card").classList.remove("show");
-        hideCheckpoint();
-        startBootSequence();
+        hideCheckpointImage();
+
+        // Reset terminal
+        setTimeout(() => {
+          hideLoadingSpinner();
+          document.getElementById("terminal-overlay").style.display = "flex";
+          document
+            .getElementById("terminal-overlay")
+            .classList.remove("hidden");
+          document.getElementById("terminal-lines").innerHTML = "";
+          document.getElementById("progress-fill").style.width = "0%";
+          document.getElementById("boot-complete").style.display = "none";
+
+          startBootSequence();
+        }, 500);
       }
 
       function toggleFullscreen() {
         if (!document.fullscreenElement) {
           document.documentElement.requestFullscreen().catch((err) => {
-            console.log(`Fullscreen error: ${err}`);
+            console.log("Fullscreen not supported");
           });
         } else {
           document.exitFullscreen();
@@ -1191,38 +1403,66 @@
       }
 
       function toggleMusic() {
-        if (isMusicPlaying) {
-          audio.pause();
-          musicBtn.style.color = "white";
-          musicBtn.innerHTML = "♪";
-        } else {
-          audio.play().catch((e) => {
-            console.log("Audio playback failed:", e);
-            alert("Please click the ♪ button again to play music.");
-          });
-          musicBtn.style.color = "#00ffff";
-          musicBtn.innerHTML = "⏸";
-        }
-        isMusicPlaying = !isMusicPlaying;
+        const btn = document.getElementById("music-btn");
+        btn.style.color =
+          btn.style.color === "rgb(255, 255, 255)" ? "#00ffff" : "white";
+
+        // Placeholder for actual music implementation
         if (navigator.vibrate) {
-          navigator.vibrate(50);
+          navigator.vibrate(100);
         }
       }
 
+      // Utility functions
+      function showLoadingSpinner() {
+        document.getElementById("loading-spinner").style.display = "block";
+      }
+
+      function hideLoadingSpinner() {
+        document.getElementById("loading-spinner").style.display = "none";
+      }
+
+      function handleResize() {
+        if (camera && renderer) {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+      }
+
+      // Enhanced animation loop
       function startAnimationLoop() {
         function animate() {
           requestAnimationFrame(animate);
-          pathPosition += (targetPosition - pathPosition) * 0.05;
-          if (pathPosition < 0) pathPosition += 1;
-          if (pathPosition > 1) pathPosition -= 1;
-          updateCameraPosition();
-          renderer.render(scene, camera);
+
+          if (isInitialized) {
+            updateCameraPosition();
+            renderer.render(scene, camera);
+          }
         }
         animate();
       }
 
+      // Initialize on load
       window.addEventListener("load", () => {
+        // Prevent default touch behaviors
+        document.addEventListener("touchmove", (e) => e.preventDefault(), {
+          passive: false,
+        });
+        document.addEventListener("touchstart", (e) => e.preventDefault(), {
+          passive: false,
+        });
+
         startBootSequence();
+      });
+
+      // Handle visibility changes for performance
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          // Pause animations when tab is hidden
+        } else {
+          // Resume animations when tab is visible
+        }
       });
     </script>
   </body>
